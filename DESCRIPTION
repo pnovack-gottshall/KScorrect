@@ -1,0 +1,21 @@
+Package: KScorrect
+Type: Package
+Title: Lilliefors-Corrected Kolmogorov-Smirnoff Goodness-Of-Fit Tests
+Version: 1.0.0
+Depends: R (>= 3.1.0),
+Imports: MASS (>= 7.3-44), mclust (>= 5.1)
+Date: 2015-11-06
+Author: Phil Novack-Gottshall, Steve C. Wang
+Maintainer: Phil Novack-Gottshall <pnovack-gottshall@ben.edu>
+Description: Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
+       goodness-of-fit tests, suitable when using sample statistics as estimates of
+       population parameters. Uses a resampling algorithm to estimate p-values from
+       the resampling distribution. Able to be used with a variety of continuous
+       distributions, including normal, lognormal, univariate mixtures of normals,
+       uniform, loguniform, exponential, gamma, and Weibull distributions. Functions
+       to generate random numbers and calculate density, distribution, and quantile
+       functions are provided for use with the loguniform and mixture distributions.
+License: CC0
+URL: https://github.com/pnovack-gottshall/KScorrected
+BugReports: https://github.com/pnovack-gottshall/KScorrected/issues
+LazyData: TRUE

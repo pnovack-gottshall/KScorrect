@@ -1,0 +1,43 @@
+#' KScorrect: Lilliefors-Corrected Kolmogorov-Smirnoff Goodness-Of-Fit Tests
+#'
+#' Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
+#' goodness-of-fit tests.
+#'
+#' KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnoff test for
+#' use in goodness-of-fit tests, suitable when using sample statistics as
+#' estimates of population parameters. It uses a resampling algorithm to
+#' estimate p-values from the resampling distribution. Coded to complement
+#' \code{\link[stats]{ks.test}}, it is able to be used with a variety of
+#' continuous distributions, including normal, lognormal, univariate mixtures of
+#' normals, uniform, loguniform, exponential, gamma, and Weibull distributions.
+#'
+#' Functions are also provided to generate random numbers and calculate density,
+#' distribution, and quantile functions are provided for use with the loguniform
+#' and mixture distributions.
+#'
+#' @author Phil Novack-Gottshall \email{pnovack-gottshall@@ben.edu}
+#' @author Steve C. Wang \email{scwang@@swarthmore.edu}
+#' @name KScorrect-package
+#' @aliases KScorrect-package KScorrect
+#' @docType package
+#'
+#' @examples
+#' # Get the package version and citation of KScorrect
+#' packageVersion("KScorrect")
+#' citation("KScorrect")
+#'
+#' x <- runif(200)
+#' l <- LcKS(x, cdf="pnorm", nreps=999)
+#' hist(l$D.resample)
+#' abline(v = l$D.obs, lty = 2)
+#' print(l, max=50)  # Just print first 50 resampled statistics
+#' # Approximate p-value (usually) << 0.05
+#'
+#' # Confirmation uncorrected version has biased type-I error as a one-sample
+#' #   test using sample statistics for parameters:
+#' ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
+#'
+#' x <- rlunif(200, min=1, max=500) # random loguniform sample
+#' l <- LcKS(x, cdf="plnorm")
+#' l$p.value      # Approximate p-value: (usually) << 0.05
+NULL
