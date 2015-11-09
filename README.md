@@ -9,4 +9,4 @@ Functions are also provided to generate random numbers and calculate density, di
 
 The most recent commit is currently: [![Travis-CI Build Status](https://travis-ci.org/pnovack-gottshall/KScorrect.svg?branch=master)](https://travis-ci.org/pnovack-gottshall/KScorrect) (Travis CI)
 
-This code is authored by Phil Novack-Gottshall <mailto:pnovack-gottshall@ben.edu> and Steve C. Wang <mailto:stevecwang@swarthmore.edu> and offered under CC0.
+This package is authored by Phil Novack-Gottshall (<mailto:pnovack-gottshall@ben.edu>) and Steve C. Wang (<mailto:stevecwang@swarthmore.edu>) and offered under CC0.
