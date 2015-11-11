@@ -207,8 +207,9 @@
 #' @import mclust
 #' @import MASS
 #' @importFrom stats sd
+#' @importFrom stats var
 #' @importFrom stats cor
-#' @importFrom stats rnorm
+#' @importFrom stats pnorm
 #' @importFrom stats rlnorm
 #' @importFrom stats runif
 #' @importFrom stats rweibull
