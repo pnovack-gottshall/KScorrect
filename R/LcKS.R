@@ -210,6 +210,7 @@
 #' @importFrom stats var
 #' @importFrom stats cor
 #' @importFrom stats pnorm
+#' @importFrom stats rnorm
 #' @importFrom stats rlnorm
 #' @importFrom stats runif
 #' @importFrom stats rweibull

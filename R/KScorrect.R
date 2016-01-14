@@ -1,15 +1,15 @@
-#' KScorrect: Lilliefors-Corrected Kolmogorov-Smirnoff Goodness-Of-Fit Tests
+#' KScorrect: Lilliefors-Corrected Kolmogorov-Smirnoff Goodness-of-Fit Tests
 #'
 #' Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
 #' goodness-of-fit tests.
 #'
 #' KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnoff test for
-#' use in goodness-of-fit tests, suitable when using sample statistics as
-#' estimates of population parameters. It uses a resampling algorithm to
+#' use in goodness-of-fit tests, suitable when population parameters are unknown
+#' and must be estimated by sample statistics. It uses a resampling algorithm to
 #' estimate p-values from the resampling distribution. Coded to complement
-#' \code{\link[stats]{ks.test}}, it is able to be used with a variety of
-#' continuous distributions, including normal, lognormal, univariate mixtures of
-#' normals, uniform, loguniform, exponential, gamma, and Weibull distributions.
+#' \code{\link[stats]{ks.test}}, it can be used with a variety of continuous
+#' distributions, including normal, lognormal, univariate mixtures of normals,
+#' uniform, loguniform, exponential, gamma, and Weibull distributions.
 #'
 #' Functions to generate random numbers and calculate density, distribution, and
 #' quantile functions are provided for use with the loguniform and mixture
@@ -37,7 +37,7 @@
 #' #   test using sample statistics for parameters:
 #' ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 #'
-#' x <- rlunif(200, min=1, max=500) # random loguniform sample
+#' x <- rlunif(200, min=exp(1), max=exp(10)) # random loguniform sample
 #' l <- LcKS(x, cdf="plnorm")
 #' l$p.value      # Approximate p-value: (usually) << 0.05
 NULL

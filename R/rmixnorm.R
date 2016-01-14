@@ -1,5 +1,6 @@
 #' @rdname dmixnorm
 #' @export
+#' @importFrom stats rnorm
 rmixnorm <- function (n, mean, sd, pro) {
   if(mode(n) != "numeric")
     stop("'n' must be a non-empty numeric vector.")
