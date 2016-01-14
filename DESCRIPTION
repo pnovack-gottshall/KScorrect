@@ -7,7 +7,7 @@ Depends:
 Imports:
     MASS (>= 7.3-44),
     mclust (>= 5.1)
-Date: 2016-1-14
+Date: 2016-01-14
 Author: Phil Novack-Gottshall, Steve C. Wang
 Maintainer: Phil Novack-Gottshall <pnovack-gottshall@ben.edu>
 Description: Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for
