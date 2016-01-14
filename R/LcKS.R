@@ -11,7 +11,7 @@
 #'
 #' @param x A numeric vector of data values (observed sample).
 #' @param cdf Character string naming a cumulative distribution function. Case
-#'   insensitive. Only continuous CDFs are valid. Allowed cdfs
+#'   insensitive. Only continuous CDFs are valid. Allowed CDFs
 #'   include:\itemize{\item \code{"pnorm"} for normal, \item \code{"pmixnorm"}
 #'   for (univariate) normal mixture, \item \code{"plnorm"} for lognormal
 #'   (log-normal, log normal), \item \code{"punif"} for uniform, \item
