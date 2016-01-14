@@ -11,9 +11,9 @@
 #' continuous distributions, including normal, lognormal, univariate mixtures of
 #' normals, uniform, loguniform, exponential, gamma, and Weibull distributions.
 #'
-#' Functions are also provided to generate random numbers and calculate density,
-#' distribution, and quantile functions are provided for use with the loguniform
-#' and mixture distributions.
+#' Functions to generate random numbers and calculate density, distribution, and
+#' quantile functions are provided for use with the loguniform and mixture
+#' distributions.
 #'
 #' @author Phil Novack-Gottshall \email{pnovack-gottshall@@ben.edu}
 #' @author Steve C. Wang \email{scwang@@swarthmore.edu}

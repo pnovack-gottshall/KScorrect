@@ -8,13 +8,14 @@ Date: 2015-11-06
 Author: Phil Novack-Gottshall, Steve C. Wang
 Maintainer: Phil Novack-Gottshall <pnovack-gottshall@ben.edu>
 Description: Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
-       goodness-of-fit tests, suitable when using sample statistics as estimates of
-       population parameters. Uses a resampling algorithm to estimate p-values from
-       the resampling distribution. Able to be used with a variety of continuous
-       distributions, including normal, lognormal, univariate mixtures of normals,
-       uniform, loguniform, exponential, gamma, and Weibull distributions. Functions
-       to generate random numbers and calculate density, distribution, and quantile
-       functions are provided for use with the loguniform and mixture distributions.
+       goodness-of-fit tests, suitable when population parameters are unknown and
+       must be estimated by sample statistics. Uses a resampling algorithm to estimate
+       p-values from the resampling distribution. Can be used with a variety of
+       continuous distributions, including normal, lognormal, univariate mixtures of
+       normals, uniform, loguniform, exponential, gamma, and Weibull distributions.
+       Functions to generate random numbers and calculate density, distribution, and
+       quantile functions are provided for use with the loguniform and mixture
+       distributions.
 License: CC0
 URL: https://github.com/pnovack-gottshall/KScorrect
 BugReports: https://github.com/pnovack-gottshall/KScorrect/issues

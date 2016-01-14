@@ -5,5 +5,5 @@ qlunif <- function(p, min, max, base=exp(1)) {
     stop("'p' must be a non-empty numeric vector")
   if(any(missing(min), missing(max)))
     stop("'min' and 'max' not provided, without default.\n")
-  return(log(max, base) + (log(max, base) - log(min, base)) * p)
+  return(base ^ (log(max, base) + (log(max, base) - log(min, base)) * p))
 }
