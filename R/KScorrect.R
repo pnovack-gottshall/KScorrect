@@ -27,17 +27,17 @@
 #' citation("KScorrect")
 #'
 #' x <- runif(200)
-#' l <- LcKS(x, cdf="pnorm", nreps=999)
-#' hist(l$D.resample)
-#' abline(v = l$D.obs, lty = 2)
-#' print(l, max=50)  # Just print first 50 resampled statistics
+#' Lc <- LcKS(x, cdf="pnorm", nreps=999)
+#' hist(Lc$D.resample)
+#' abline(v = Lc$D.obs, lty = 2)
+#' print(Lc, max=50)  # Just print first 50 resampled statistics
 #' # Approximate p-value (usually) << 0.05
 #'
-#' # Confirmation uncorrected version has biased type-I error as a one-sample
+#' # Confirmation uncorrected version has biased Type II error as a one-sample
 #' #   test using sample statistics for parameters:
 #' ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 #'
 #' x <- rlunif(200, min=exp(1), max=exp(10)) # random loguniform sample
-#' l <- LcKS(x, cdf="plnorm")
-#' l$p.value      # Approximate p-value: (usually) << 0.05
+#' Lc <- LcKS(x, cdf="plnorm")
+#' Lc$p.value      # Approximate p-value: (usually) << 0.05
 NULL

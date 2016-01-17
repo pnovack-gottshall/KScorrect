@@ -39,13 +39,13 @@ A list containing the following components:
 }
 \description{
 Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
-goodness-of-fit tests, suitable when using sample statistics as estimates of
-population parameters. It uses a Monte Carlo resampling algorithm to estimate
-\emph{p}-values (and their standard error) from the resampling distribution.
-Coded to wrap around \code{\link[stats]{ks.test}}, it is able to be used with
-a variety of continuous distributions, including normal, lognormal,
-univariate mixtures of normals, uniform, loguniform, exponential, gamma, and
-Weibull distributions.
+goodness-of-fit tests, suitable when population parameters are unknown and
+must be estimated by sample statistics. It uses a Monte Carlo resampling
+algorithm to estimate \emph{p}-values (and their standard error) from the
+resampling distribution. Coded to wrap around \code{\link[stats]{ks.test}},
+it can be used with a variety of continuous distributions, including normal,
+lognormal, univariate mixtures of normals, uniform, loguniform, exponential,
+gamma, and Weibull distributions.
 }
 \details{
 The function builds a resampling distribution \code{D.resample} of
@@ -121,8 +121,8 @@ The Kolmogorov-Smirnoff (such as \code{ks.test}) is only valid as a
   statistic; i.e., using the sample to estimate population parameters brings
   the Kolmogorov-Smirnoff test statistic D closer to the null distribution
   than it would be under the hypothesis where the population parameters are
-  unknown (Gihman 1952). In other words, it is biased with a reduced Type-I
-  error. Lilliefors (1967, 1969) provided a solution, using Monte Carlo
+  unknown (Gihman 1952). In other words, it is biased with an increased Type
+  II error. Lilliefors (1967, 1969) provided a solution, using Monte Carlo
   methods to approximate the shape of the null distribution when the sample
   statistics are used as population parameters, and to use this null
   distribution as the basis for critical values. The function \code{LcKS}
@@ -130,21 +130,21 @@ The Kolmogorov-Smirnoff (such as \code{ks.test}) is only valid as a
 }
 \examples{
 x <- runif(200)
-l <- LcKS(x, cdf="pnorm", nreps=999)
-hist(l$D.resample)
-abline(v = l$D.obs, lty = 2)
-print(l, max=50)  # Just print first 50 resampled statistics
+Lc <- LcKS(x, cdf="pnorm", nreps=999)
+hist(Lc$D.resample)
+abline(v = Lc$D.obs, lty = 2)
+print(Lc, max=50)  # Just print first 50 resampled statistics
 # Approximate p-value (usually) << 0.05
 
-# Confirmation uncorrected version has biased type-I error as a one-sample
+# Confirmation uncorrected version has biased Type II error as a one-sample
 #   test using sample statistics for parameters:
 ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 
 # Confirm critical values for normal distribution are correct
 nreps <- 9999
 x <- rnorm(25)
-l <- LcKS(x, "pnorm", nreps=nreps)
-res.Ds <- sort(l$D.resample)
+Lc <- LcKS(x, "pnorm", nreps=nreps)
+res.Ds <- sort(Lc$D.resample)
 crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 # Lilliefors' (1967) critical values, using improved values from
 #   Parsons & Wirsching (1982) (for n=25):
@@ -154,8 +154,8 @@ round(res.Ds[crit], 3)			# Approximate critical values (converges as nreps incre
 # Confirm critical values for exponential the same as reported by Lilliefors (1969)
 nreps <- 9999
 x <- rexp(25)
-l <- LcKS(x, "pexp", nreps=nreps)
-res.Ds <- sort(l$D.resample)
+Lc <- LcKS(x, "pexp", nreps=nreps)
+res.Ds <- sort(Lc$D.resample)
 crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 # Lilliefors' (1969) critical values (for n=25):
 # 0.170 0.180 0.191 0.210 0.247
@@ -166,14 +166,14 @@ round(res.Ds[crit], 3)			# Approximate critical values (converges as nreps incre
 # Takes time for maximum likelihood optimization of statistics
 require(MASS)
 x <- runif(100, min=1, max=100)
-l <- LcKS(x, cdf="pgamma", nreps=499)
-l$p.value
+Lc <- LcKS(x, cdf="pgamma", nreps=499)
+Lc$p.value
 
 # Confirm critical values for Weibull the same as reported by Parsons & Wirsching (1982)
 nreps <- 9999
 x <- rweibull(25, shape=1, scale=1)
-l <- LcKS(x, "pweibull", nreps=nreps)
-res.Ds <- sort(l$D.resample)
+Lc <- LcKS(x, "pweibull", nreps=nreps)
+res.Ds <- sort(Lc$D.resample)
 crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 # Parsons & Wirsching (1982) critical values (for n=25):
 # 0.141 0.148 0.157 0.172 0.201
@@ -183,12 +183,12 @@ round(res.Ds[crit], 3)			# Approximate critical values (converges as nreps incre
 # Takes time to identify model parameters
 require(mclust)
 x <- rmixnorm(200, mean=c(10, 20), sd=2, pro=c(1,3))
-l <- LcKS(x, cdf="pmixnorm", nreps=499, G=1:9)   # Default G (1:9) takes long time
-l$p.value
+Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=1:9)   # Default G (1:9) takes long time
+Lc$p.value
 G <- Mclust(x)$parameters$variance$G             # Optimal model has only two components
-l <- LcKS(x, cdf="pmixnorm", nreps=499, G=G)     # Restricting to likely G saves time
+Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=G)     # Restricting to likely G saves time
 # But note changes null hypothesis: now testing against just two-component mixture
-l$p.value
+Lc$p.value
 }
 
 }
