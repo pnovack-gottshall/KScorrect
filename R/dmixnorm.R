@@ -7,11 +7,9 @@
 #'
 #' @param x Vector of quantiles.
 #' @param q Vector of quantiles.
-#' @param npts Number of probability points in resampling quantile
-#'   approximation. \code{Default = 100} points. See \code{details} below.
-#' @param nreps Number of replicates to use in resampling approximation of
-#'   quantile function. \code{Default = 5000} replicates. See \code{details}
-#'   below.
+#' @param p Vector of probabilities.
+#' @param nr Number of random observations to use in quantile approximation.
+#'   \code{Default = 200000} points. See \code{details} below.
 #' @param n Number of observations.
 #' @param mean Vector of means, one for each component.
 #' @param sd Vector of standard deviations. If a single value is provided, an
@@ -26,29 +24,26 @@
 #'   \code{sim} when used with univariate distributions.
 #'
 #'   The number of mixture components (argument \code{G} in \code{mclust}) is
-#'   identified from the length of the \code{mean} vector. If a single \code{sd}
+#'   specified from the length of the \code{mean} vector. If a single \code{sd}
 #'   value is provided, an equal-variance mixture model (\code{modelNames="E"}
 #'   in \code{mclust}) is implemented; if multiple values are provided, a
 #'   variable-variance model (\code{modelNames="V"} in \code{mclust}) is
-#'   implemented. If mixing proportion \code{pro} is missing, each component is
+#'   implemented. If mixing proportion \code{pro} is missing, all components are
 #'   assigned equal mixing proportions, with a warning called. If supplied
 #'   proportions do not sum to unity, they are rescaled to do so. If the length
-#'   of supplied means, standard deviations, and mixing proportions conflict, an
-#'   error is called.
+#'   of supplied means, standard deviations, and mixing proportions conflicts,
+#'   an error is called.
 #'
-#'   Because mixture models are not shape and scale invariant, an analytical
-#'   solution is not available to calculate a quantile function for a given
-#'   combination of mixture parameters. Monte Carlo resampling methods are used
-#'   in \code{qmixnorm} to approximate the quantile function. The function is
-#'   approximated by drawing \code{(default =) 100} random numbers from the
-#'   specified mixture distribution, repeating this \code{(default =) 5000}
-#'   times, and then taking the mean of the rank-ordered values to yield
-#'   expected quantiles. Although 2000 \code{nreps} replicates are generally
-#'   sufficient for most uses, \code{default = 5000} provides more precise
-#'   approximations at slightly increased time. See \code{examples} for
-#'   confirmation that approximations are accurate, comparing the approximate
-#'   quantiles from a single 'mixture' distribution to those calculated
-#'   analytically for the same distribution using \code{qnorm}.
+#'   Analytical solutions are not available to calculate a quantile function for
+#'   all combinations of mixture parameters. \code{qmixnorm} approximates the
+#'   quantile function by drawing \code{nr = 200000} random numbers from the
+#'   specified mixture distribution, and using \code{stats::quantile} to produce
+#'   expected quantiles for the specified probabilities \code{p}. Although
+#'   200000 \code{nr} random values are sufficient for most uses, greater values
+#'   provide more precise approximations at slightly increased computation time.
+#'   See \code{examples} for confirmation that approximations are accurate,
+#'   comparing the approximate quantiles from a single 'mixture' distribution to
+#'   those calculated analytically for the same distribution using \code{qnorm}.
 #'
 #' @return \code{dmixnorm} gives the density, \code{pmixnorm} gives the
 #'   distribution function, \code{qmixnorm} approximates the quantile function,
@@ -81,28 +76,23 @@
 #' sd^2            # Note reports var (sigma-squared) instead of sd used above
 #' }
 #'
-#' # Density and distribution functions
-#' plot(seq(0, 10, .1), dmixnorm(seq(0, 10, .1), mean=mean, pro=pro, sd=sd),
+#' # Density, distribution, and quantile functions
+#' plot(seq(0, 10, .1), dmixnorm(seq(0, 10, .1), mean=mean, sd=sd, pro=pro),
 #'      type="l", main="Normal mixture density")
-#' plot(seq(0, 10, .1), pmixnorm(seq(0, 10, .1), mean=mean, pro=pro, sd=sd),
+#' plot(seq(0, 10, .1), pmixnorm(seq(0, 10, .1), mean=mean, sd=sd, pro=pro),
 #'      type="l", main="Normal mixture cumulative")
-#'
-#' # Resampling solution for quantile function
-#' npts <- 100
-#' nreps <- 2000
-#' exp <- qmixnorm(npts, nreps, mean=mean, pro=pro, sd=sd)
-#' cbind(ppoints(npts), exp)     # Quantiles for various probabilities
-#' plot(exp, type="l", main="Approximate quantile for normal mixture")
+#' plot(seq(0, 1, .01), qmixnorm(seq(0, 1, .01), mean=mean, sd=sd, pro=pro),
+#'      type="l", main="Normal mixture quantile")
 #'
 #' \dontrun{
 #' # Requires functions from the 'mclust' package
-#' # Confirmation that approximates correct solution
+#' # Confirmation that qmixnorm approximates correct solution
 #' #   (single component 'mixture' should mimic qnorm):
 #' x <- rmixnorm(n=5000, mean=0, pro=1, sd=1)
 #' mpar <- mclust::Mclust(x)$param
-#' approx <- qmixnorm(npts, nreps, mean=mpar$mean, pro=mpar$pro,
+#' approx <- qmixnorm(p=ppoints(100), mean=mpar$mean, pro=mpar$pro,
 #'      sd=sqrt(mpar$variance$sigmasq))
-#' known <- qnorm(ppoints(npts), mean=mpar$mean, sd=sqrt(mpar$variance$sigmasq))
+#' known <- qnorm(p=ppoints(100), mean=mpar$mean, sd=sqrt(mpar$variance$sigmasq))
 #' cor(approx, known)  # Approximately the same
 #' plot(approx, main="Quantiles for (unimodal) normal")
 #' lines(known)
@@ -111,8 +101,7 @@
 #' }
 #' @export
 #' @import mclust
-#' @importFrom stats ppoints
-dmixnorm <- function(x, mean=NULL, sd=NULL, pro=NULL) {
+dmixnorm <- function(x, mean, sd, pro) {
   if(mode(x) != "numeric")
     stop("'x' must be a non-empty numeric vector.")
   if(any(missing(mean), missing(sd)))

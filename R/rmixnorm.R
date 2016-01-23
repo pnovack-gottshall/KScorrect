@@ -2,8 +2,8 @@
 #' @export
 #' @importFrom stats rnorm
 rmixnorm <- function (n, mean, sd, pro) {
-  if(mode(n) != "numeric")
-    stop("'n' must be a non-empty numeric vector.")
+  if(mode(n) != "numeric" | n <= 1L)
+    stop("'n' must be a positive, non-empty numeric vector.")
   if(any(missing(mean), missing(sd)))
     stop("'mean' and 'sd' not provided, without default.")
   mean <- as.vector(mean, mode="numeric")

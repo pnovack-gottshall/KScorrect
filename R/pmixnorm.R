@@ -1,6 +1,6 @@
 #' @rdname dmixnorm
 #' @export
-pmixnorm <- function(q, mean=NULL, sd=NULL, pro=NULL) {
+pmixnorm <- function(q, mean, sd, pro) {
   if(mode(q) != "numeric")
     stop("'q' must be a non-empty numeric vector")
   if(any(missing(mean), missing(sd)))
