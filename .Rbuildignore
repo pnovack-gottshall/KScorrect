@@ -1,6 +1,0 @@
-^.*\.Rproj$
-^\.Rproj\.user$
-^revdep$
-^\.travis\.yml$
-^For vignette\.docx$
-^qmixnorm_old\.R$
