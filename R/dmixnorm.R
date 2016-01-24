@@ -109,7 +109,6 @@ dmixnorm <- function(x, mean, sd, pro) {
   mean <- as.vector(mean, mode="numeric")
   G <- length(mean)
   sd <- as.vector(sd, mode="numeric")
-  lsd <- length(sd)
   if (missing(pro)) {
     pro <- rep(1/G, G)
     warning("mixing proportion 'pro' not provided. Assigned equal proportions by default.")
@@ -117,11 +116,18 @@ dmixnorm <- function(x, mean, sd, pro) {
   if(any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
+  modelName = "V"
+  lsd <- length(sd)
+  if(lsd==1) {
+    modelName <- "E"
+    sd[seq(G)] <- sd[1]
+    lsd <- length(sd)
+    warning("'equal variance model' implemented. If want 'variable-variance model', specify remaining 'sd's.")
+  }
   if(G < lsd | G < lpro | (lsd > 1 & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode="numeric")
   pro <- pro/sum(pro)
-  if(length(sd)==1) ( modelName <- "E" ) else ( modelName <- "V" )
   parameters <- list(mean=mean, pro=pro, variance=list(sigmasq=sd^2, d=1, G=G))
   dens <- mclust::dens(data=x, modelName=modelName, parameters=parameters)
   return(dens)

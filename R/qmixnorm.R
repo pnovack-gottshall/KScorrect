@@ -11,7 +11,6 @@ qmixnorm <- function (p, mean, sd, pro, nr = 200000)  {
   mean <- as.vector(mean, mode = "numeric")
   G <- length(mean)
   sd <- as.vector(sd, mode = "numeric")
-  lsd <- length(sd)
   if (missing(pro)) {
     pro <- rep(1/G, G)
     warning("mixing proportion 'pro' not provided. Assigned equal proportions by default.")
@@ -19,6 +18,8 @@ qmixnorm <- function (p, mean, sd, pro, nr = 200000)  {
   if (any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
+  if(length(sd)==1) sd[seq(G)] <- sd[1]
+  lsd <- length(sd)
   if(G < lsd | G < lpro | (lsd > 1 & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode = "numeric")
