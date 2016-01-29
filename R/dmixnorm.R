@@ -9,7 +9,7 @@
 #' @param q Vector of quantiles.
 #' @param p Vector of probabilities.
 #' @param nr Number of random observations to use in quantile approximation.
-#'   \code{Default = 200000} numbers. See \code{details} below.
+#'   \code{Default = 200,000} numbers. See \code{details} below.
 #' @param n Number of observations.
 #' @param mean Vector of means, one for each component.
 #' @param sd Vector of standard deviations. If a single value is provided, an
@@ -36,12 +36,12 @@
 #'
 #'   Analytical solutions are not available to calculate a quantile function for
 #'   all combinations of mixture parameters. \code{qmixnorm} approximates the
-#'   quantile function by drawing \code{(default) nr = 200000} random numbers
+#'   quantile function by drawing \code{(default) nr = 200,000} random numbers
 #'   from the specified mixture distribution, and using \code{stats::quantile}
 #'   to produce expected quantiles for the specified probabilities \code{p}.
-#'   Sensitivity analyses demontrate that using \code{[default] nr = 200000}
+#'   Sensitivity analyses demontrate that using \code{[default] nr = 200,000}
 #'   random numbers will provide quantile values with +/- 0.01 precision 99
-#'   percent of the time. Using \code{[default] nr = 10000000} random numbers
+#'   percent of the time. Using \code{[default] nr = 10,000,000} random numbers
 #'   will provide quantile values with +/- 0.001 precision 97 percent of the
 #'   time (at greater computational cost). See \code{examples} for confirmation
 #'   that approximations are accurate, comparing the approximate quantiles from
