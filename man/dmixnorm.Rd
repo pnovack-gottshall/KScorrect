@@ -70,13 +70,13 @@ These functions use, modify, and wrap around those from the
   from the specified mixture distribution, and using \code{stats::quantile}
   to produce expected quantiles for the specified probabilities \code{p}.
   Sensitivity analyses demontrate that using \code{[default] nr = 200000}
-  random numbers will provide quantile values with +/- 0.01 precision 99% of
-  the time. Using \code{[default] nr = 10000000} random numbers will provide
-  quantile values with +/- 0.001 precision 97% of the time (at greater
-  computational cost). See \code{examples} for confirmation that
-  approximations are accurate, comparing the approximate quantiles from a
-  single 'mixture' distribution to those calculated analytically for the same
-  distribution using \code{qnorm}.
+  random numbers will provide quantile values with +/- 0.01 precision 99
+  percent of the time. Using \code{[default] nr = 10000000} random numbers
+  will provide quantile values with +/- 0.001 precision 97 percent of the
+  time (at greater computational cost). See \code{examples} for confirmation
+  that approximations are accurate, comparing the approximate quantiles from
+  a single 'mixture' distribution to those calculated analytically for the
+  same distribution using \code{qnorm}.
 }
 \examples{
 # Mixture of two normal distributions
