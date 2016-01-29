@@ -11,18 +11,20 @@ rmixnorm <- function (n, mean, sd, pro) {
   sd <- as.vector(sd, mode="numeric")
   if (missing(pro)) {
     pro <- rep(1/G, G)
-    warning("mixing proportion 'pro' not provided. Assigned equal proportions by default.")
+    warning("mixing proportion 'pro' not provided. Assigned equal proportions
+            by default.")
   }
   if(any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
   modelName = "V"
   lsd <- length(sd)
-  if(lsd==1) {
+  if(lsd==1 & G > 1L) {
     modelName <- "E"
     sd[seq(G)] <- sd[1]
     lsd <- length(sd)
-    warning("'equal variance model' implemented. If want 'variable-variance model', specify remaining 'sd's.")
+    warning("'equal variance model' implemented. If want 'variable-variance
+            model', specify remaining 'sd's.")
   }
   if(G < lsd | G < lpro | (lsd > 1 & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")
