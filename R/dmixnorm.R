@@ -41,8 +41,8 @@
 #'   to produce expected quantiles for the specified probabilities \code{p}.
 #'   Sensitivity analyses demontrate that using \code{[default] nr = 200,000}
 #'   random numbers will provide quantile values with +/- 0.01 precision 99
-#'   percent of the time. Using \code{[default] nr = 10,000,000} random numbers
-#'   will provide quantile values with +/- 0.001 precision 97 percent of the
+#'   percent of the time. Using \code{[default] nr = 4,000,000} random numbers
+#'   will provide quantile values with +/- 0.001 precision 90 percent of the
 #'   time (at greater computational cost). See \code{examples} for confirmation
 #'   that approximations are accurate, comparing the approximate quantiles from
 #'   a single 'mixture' distribution to those calculated analytically for the
@@ -114,18 +114,20 @@ dmixnorm <- function(x, mean, sd, pro) {
   sd <- as.vector(sd, mode="numeric")
   if (missing(pro)) {
     pro <- rep(1/G, G)
-    warning("mixing proportion 'pro' not provided. Assigned equal proportions by default.")
+    warning("mixing proportion 'pro' not provided. Assigned equal proportions
+            by default.")
   }
   if(any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
   modelName = "V"
   lsd <- length(sd)
-  if(lsd==1) {
+  if(lsd==1 & G > 1L) {
     modelName <- "E"
     sd[seq(G)] <- sd[1]
     lsd <- length(sd)
-    warning("'equal variance model' implemented. If want 'variable-variance model', specify remaining 'sd's.")
+    warning("'equal variance model' implemented. If want 'variable-variance
+            model', specify remaining 'sd's.")
   }
   if(G < lsd | G < lpro | (lsd > 1 & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")

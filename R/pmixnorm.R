@@ -10,7 +10,8 @@ pmixnorm <- function(q, mean, sd, pro) {
   sd <- as.vector(sd, mode="numeric")
   if (missing(pro)) {
     pro <- rep(1/G, G)
-    warning("mixing proportion 'pro' not provided. Assigned equal proportions by default.")
+    warning("mixing proportion 'pro' not provided. Assigned equal proportions
+            by default.")
   }
   if(any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
