@@ -5,7 +5,7 @@ Version: 1.1.0
 Depends: R (>= 3.1.0)
 Imports:
     MASS (>= 7.3-44), mclust (>= 5.1)
-Date: 2016-01-29
+Date: 2016-02-12
 Author: Phil Novack-Gottshall, Steve C. Wang
 Maintainer: Phil Novack-Gottshall <pnovack-gottshall@ben.edu>
 Description: Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for

@@ -54,7 +54,7 @@ The function builds a resampling distribution \code{D.resample} of
   provided sample \code{x}. Observed statistic \code{D} and resampled test
   statistics are calculated using \code{\link[stats]{ks.test}}.
 
-  The default \code{nreps=4999} provides generally consistent \emph{p}-values
+  The default \code{nreps=4999} provides accurate \emph{p}-values
   (with small standard errors). \code{nreps=1999} is sufficient for most
   cases, and computationally faster when dealing with more complicated
   distributions (such as univariate normal mixtures, gamma, and Weibull).
@@ -136,8 +136,8 @@ abline(v = Lc$D.obs, lty = 2)
 print(Lc, max=50)  # Just print first 50 resampled statistics
 # Approximate p-value (usually) << 0.05
 
-# Confirmation uncorrected version has biased Type II error as a one-sample
-#   test using sample statistics for parameters:
+# Confirmation uncorrected version has elevated Type II error rate when
+#   using sample statistics to estimate parameters:
 ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 
 # Confirm critical values for normal distribution are correct

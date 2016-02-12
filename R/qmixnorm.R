@@ -13,8 +13,7 @@ qmixnorm <- function (p, mean, sd, pro, nr = 200000)  {
   sd <- as.vector(sd, mode = "numeric")
   if (missing(pro)) {
     pro <- rep(1/G, G)
-    warning("mixing proportion 'pro' not provided. Assigned equal proportions
-            by default.")
+    warning("mixing proportion 'pro' not provided. Assigned equal proportions by default.")
   }
   if (any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
@@ -27,5 +26,10 @@ qmixnorm <- function (p, mean, sd, pro, nr = 200000)  {
   pro <- pro/sum(pro)
   samp <- rmixnorm(nr, mean = mean, sd = sd, pro = pro)
   quants <- stats::quantile(samp, p)
+  if (any(p < .01, p > 0.99))
+    warning("quantile approximations may not be reliable for probability values close to 0 or 1.")
+  tol <- -log10(.Machine$double.eps)
+  if(any(round(p, tol)==0L)) quants[which(round(p, tol)==0L)] <- -Inf
+  if(any(round(p, tol)==1L)) quants[which(round(p, tol)==1L)] <- Inf
   return(as.vector(quants))
 }

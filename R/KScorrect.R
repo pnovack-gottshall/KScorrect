@@ -33,8 +33,8 @@
 #' print(Lc, max=50)  # Just print first 50 resampled statistics
 #' # Approximate p-value (usually) << 0.05
 #'
-#' # Confirmation uncorrected version has biased Type II error as a one-sample
-#' #   test using sample statistics for parameters:
+#' # Confirmation uncorrected version has elevated Type II error rate when
+#' #   using sample statistics to estimate parameters:
 #' ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 #'
 #' x <- rlunif(200, min=exp(1), max=exp(10)) # random loguniform sample

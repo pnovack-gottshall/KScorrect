@@ -21,7 +21,7 @@ rmixnorm(n, mean, sd, pro)
 \item{mean}{Vector of means, one for each component.}
 
 \item{sd}{Vector of standard deviations. If a single value is provided, an
-equal variance mixture model is implemented. Must not be negative.}
+equal-variance mixture model is implemented. Must not be negative.}
 
 \item{pro}{Vector of mixing proportions, one for each component. If missing,
 an equal-proportion model is implemented, with a warning. If proportions do
@@ -31,8 +31,8 @@ not sum to unity, they are rescaled to do so. Must not be negative.}
 
 \item{p}{Vector of probabilities.}
 
-\item{nr}{Number of random observations to use in quantile approximation.
-\code{Default = 200,000} numbers. See \code{details} below.}
+\item{nr}{Number of random values to use in quantile approximation.
+\code{Default = 200,000} values. See \code{details} below.}
 
 \item{n}{Number of observations.}
 }
@@ -60,23 +60,25 @@ These functions use, modify, and wrap around those from the
   variable-variance model (\code{modelNames="V"} in \code{mclust}) is
   implemented. If mixing proportion \code{pro} is missing, all components are
   assigned equal mixing proportions, with a warning called. If supplied
-  proportions do not sum to unity, they are rescaled to do so. If the length
-  of supplied means, standard deviations, and mixing proportions conflicts,
-  an error is called.
+  proportions do not sum to unity, they are rescaled to do so. If the lengths
+  of supplied means, standard deviations, and mixing proportions conflict, an
+  error is called.
 
   Analytical solutions are not available to calculate a quantile function for
   all combinations of mixture parameters. \code{qmixnorm} approximates the
   quantile function by drawing \code{(default) nr = 200,000} random numbers
   from the specified mixture distribution, and using \code{stats::quantile}
   to produce expected quantiles for the specified probabilities \code{p}.
-  Sensitivity analyses demontrate that using \code{[default] nr = 200,000}
-  random numbers will provide quantile values with +/- 0.01 precision 99
-  percent of the time. Using \code{[default] nr = 4,000,000} random numbers
-  will provide quantile values with +/- 0.001 precision 90 percent of the
-  time (at greater computational cost). See \code{examples} for confirmation
-  that approximations are accurate, comparing the approximate quantiles from
-  a single 'mixture' distribution to those calculated analytically for the
-  same distribution using \code{qnorm}.
+  Quantile values may not be reliable for probabilities close to 0 or 1, and
+  call a warning when specified probabilities are less than 0.01 and greater
+  than 0.99. Sensitivity analyses demontrate that using \code{[default] nr =
+  200,000} random numbers will provide quantile values with +/- 0.01
+  precision 99 percent of the time. Using \code{[default] nr = 4,000,000}
+  random numbers will provide quantile values with +/- 0.001 precision 90
+  percent of the time (at greater computational cost). See \code{examples}
+  for confirmation that approximations are accurate, comparing the
+  approximate quantiles from a single 'mixture' distribution to those
+  calculated analytically for the same distribution using \code{qnorm}.
 }
 \examples{
 # Mixture of two normal distributions
