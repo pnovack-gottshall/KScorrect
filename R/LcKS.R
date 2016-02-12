@@ -32,10 +32,10 @@
 #'   provided sample \code{x}. Observed statistic \code{D} and resampled test
 #'   statistics are calculated using \code{\link[stats]{ks.test}}.
 #'
-#'   The default \code{nreps=4999} provides accurate \emph{p}-values
-#'   (with small standard errors). \code{nreps=1999} is sufficient for most
-#'   cases, and computationally faster when dealing with more complicated
-#'   distributions (such as univariate normal mixtures, gamma, and Weibull).
+#'   The default \code{nreps=4999} provides accurate \emph{p}-values (with small
+#'   standard errors). \code{nreps=1999} is sufficient for most cases, and
+#'   computationally faster when dealing with more complicated distributions
+#'   (such as univariate normal mixtures, gamma, and Weibull).
 #'
 #'   The \emph{p}-value is calculated as the number of Monte Carlo samples with
 #'   D test statistics more extreme than that in the observed sample
@@ -72,7 +72,7 @@
 #'   that resampling BIC-optimizations only consider \code{G} mixture
 #'   components.
 #'
-#'   But be aware that constraining \code{G} changes the null hypothesis. The
+#'   Be aware that constraining \code{G} changes the null hypothesis. The
 #'   default (\code{G=1:9}) null hypothesis is that a sample was drawn from
 #'   \emph{any \code{G=1:9}-component mixture distribution}. Specifying a
 #'   particular value, such as \code{G=2}, restricts the null hypothesis to
