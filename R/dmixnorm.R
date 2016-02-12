@@ -40,7 +40,7 @@
 #'   from the specified mixture distribution, and using \code{stats::quantile}
 #'   to produce expected quantiles for the specified probabilities \code{p}.
 #'   Quantile values may not be reliable for probabilities close to 0 or 1, and
-#'   call a warning when specified probabilities are less than 0.01 and greater
+#'   users are warned when specified probabilities are less than 0.01 and greater
 #'   than 0.99. Sensitivity analyses demontrate that using \code{[default] nr =
 #'   200,000} random numbers will provide quantile values with +/- 0.01
 #'   precision 99 percent of the time. Using \code{[default] nr = 4,000,000}
