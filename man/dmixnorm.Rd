@@ -11,7 +11,7 @@ dmixnorm(x, mean, sd, pro)
 
 pmixnorm(q, mean, sd, pro)
 
-qmixnorm(p, mean, sd, pro, nr = 2e+05)
+qmixnorm(p, mean, sd, pro, expand = 1)
 
 rmixnorm(n, mean, sd, pro)
 }
@@ -31,8 +31,8 @@ not sum to unity, they are rescaled to do so. Must not be negative.}
 
 \item{p}{Vector of probabilities.}
 
-\item{nr}{Number of random values to use in quantile approximation.
-\code{Default = 200,000} values. See \code{details} below.}
+\item{expand}{Value to expand the range of probabilities for quantile
+approximation. \code{Default = 1.0}. See \code{details} below.}
 
 \item{n}{Number of observations.}
 }
@@ -49,9 +49,11 @@ distributions with means equal to \code{mean}, standard deviations equal to
 }
 \details{
 These functions use, modify, and wrap around those from the
-  \code{mclust} package, especially \code{\link[mclust]{dens}} and
-  \code{\link[mclust]{sim}}. \code{rmixnorm} is slightly faster than
-  \code{sim} when used with univariate distributions.
+  \code{mclust} package, especially \code{\link[mclust]{dens}},
+  \code{\link[mclust]{sim}}, and \code{\link[mclust]{quantileMclust}}.
+  Functions are slightly faster that the corresponding mclust functions when
+  used with univariate distributions, and are written for parameterized
+  distributions (as opposed to calculation of sample statistics).
 
   The number of mixture components (argument \code{G} in \code{mclust}) is
   specified from the length of the \code{mean} vector. If a single \code{sd}
@@ -66,19 +68,25 @@ These functions use, modify, and wrap around those from the
 
   Analytical solutions are not available to calculate a quantile function for
   all combinations of mixture parameters. \code{qmixnorm} approximates the
-  quantile function by drawing \code{(default) nr = 200,000} random numbers
-  from the specified mixture distribution, and using \code{stats::quantile}
-  to produce expected quantiles for the specified probabilities \code{p}.
-  Quantile values may not be reliable for probabilities close to 0 or 1, and
-  users are warned when specified probabilities are less than 0.01 and greater
-  than 0.99. Sensitivity analyses demontrate that using \code{[default] nr =
-  200,000} random numbers will provide quantile values with +/- 0.01
-  precision 99 percent of the time. Using \code{[default] nr = 4,000,000}
-  random numbers will provide quantile values with +/- 0.001 precision 90
-  percent of the time (at greater computational cost). See \code{examples}
-  for confirmation that approximations are accurate, comparing the
-  approximate quantiles from a single 'mixture' distribution to those
-  calculated analytically for the same distribution using \code{qnorm}.
+  quantile function using a spline function calculated from cumulative
+  density functions for the specified mixture distribution. Quantile values
+  for probabilities near zero and one are approximated by adding and
+  subtracting the range of typically observed values by a multiple (specified
+  by \code{(default) expand = 1}). In cases where the distribution range is large
+  (or when mixture components are discrete, with large distances between
+  them), resulting probability values will be very close to zero or one and
+  can result in non-calculable (\code{NaN}) quantiles and a warning. Use of
+  other \code{expand} values (especially \code{expand < 1.0} that expand the
+  ranges by smaller multiples) will often yield proper approximations. Note
+  that \code{expand} values equal to or close to 0 may result in inaccurate
+  approximation of extreme quantiles. If the objective is correct
+  approximation of extreme quantile values, it is recommended to use the
+  largest \code{expand} value that does not result in a warning. See
+  \code{examples} for confirmation that approximations are accurate,
+  comparing the approximate quantiles from a single 'mixture' distribution to
+  those calculated analytically for the same distribution using \code{qnorm},
+  and demonstrating cases in which using non-default \code{expand} values
+  will allow correct approximation of quantiles.
 }
 \examples{
 # Mixture of two normal distributions
@@ -103,8 +111,15 @@ plot(seq(0, 10, .1), dmixnorm(seq(0, 10, .1), mean=mean, sd=sd, pro=pro),
      type="l", main="Normal mixture density")
 plot(seq(0, 10, .1), pmixnorm(seq(0, 10, .1), mean=mean, sd=sd, pro=pro),
      type="l", main="Normal mixture cumulative")
-plot(seq(0, 1, .01), qmixnorm(seq(0, 1, .01), mean=mean, sd=sd, pro=pro),
+plot(stats::ppoints(100), qmixnorm(stats::ppoints(100), mean=mean, sd=sd, pro=pro),
      type="l", main="Normal mixture quantile")
+
+# 'expand' can be specified to prevent non-calculable quantiles:
+q1 <- qmixnorm(stats::ppoints(30), mean=c(1, 20), sd=c(1, 1), pro=c(1, 1))
+q1 # Calls a warning because of NaNs
+# Reduce 'exand'. (Values < 0.8 allow correct approximation)
+q2 <- qmixnorm(stats::ppoints(30), mean=c(1, 20), sd=c(1, 1), pro=c(1, 1), expand=.5)
+plot(stats::ppoints(30), q2, type="l", main="Quantile with reduced range")
 
 \dontrun{
 # Requires functions from the 'mclust' package
@@ -123,15 +138,14 @@ legend("topleft", legend=c("known", "approximation"), pch=c(NA,1),
 }
 }
 \author{
-Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu}, with
-  assistance from Luca Scrucca for \code{pmixnorm}.
-
-Steve Wang \email{scwang@swarthmore.edu} for \code{qmixnorm}.
+Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu} and Steve
+  Wang \email{scwang@swarthmore.edu}, with assistance from Luca Scrucca for
+  \code{pmixnorm} and \code{qmixnorm}.
 }
 \seealso{
 \code{\link[stats]{Distributions}} for other standard distributions,
-  and \code{mclust::\link[mclust]{dens}} and \code{\link[mclust]{sim}} for
-  alternative density and random number functions for multivariate mixture
-  distributions.
+  and \code{mclust::\link[mclust]{dens}}, \code{\link[mclust]{sim}}, and
+  \code{\link[mclust]{quantileMclust}} for alternative density, quantile, and
+  random number functions for multivariate mixture distributions.
 }
 

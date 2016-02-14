@@ -1,11 +1,9 @@
 #' @rdname dmixnorm
 #' @export
-#' @importFrom stats quantile
-qmixnorm <- function (p, mean, sd, pro, nr = 200000)  {
+#' @importFrom stats spline
+qmixnorm <- function (p, mean, sd, pro, expand=1) {
   if(mode(p) != "numeric")
     stop("'p' must be a non-empty numeric vector")
-  if(mode(nr) != "numeric" | nr <= 1L)
-    stop("'nr' must be a positive, non-empty numeric vector.")
   if (any(missing(mean), missing(sd)))
     stop("'mean' and 'sd' not provided, without default.")
   mean <- as.vector(mean, mode = "numeric")
@@ -24,12 +22,19 @@ qmixnorm <- function (p, mean, sd, pro, nr = 200000)  {
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode = "numeric")
   pro <- pro/sum(pro)
-  samp <- rmixnorm(nr, mean = mean, sd = sd, pro = pro)
-  quants <- stats::quantile(samp, p)
-  if (any(p < .01, p > 0.99))
-    warning("quantile approximations may not be reliable for probability values close to 0 or 1.")
-  tol <- -log10(.Machine$double.eps)
-  if(any(round(p, tol)==0L)) quants[which(round(p, tol)==0L)] <- -Inf
-  if(any(round(p, tol)==1L)) quants[which(round(p, tol)==1L)] <- Inf
+  nr <- 10000
+  x <- rmixnorm(nr * G, mean = mean, sd = sd, pro = pro)
+  if(mode(expand) != "numeric" | expand < 0L)
+    stop("'expand' must be a non-negative number.")
+  span <- seq(min(x) - expand * diff(range(x)), max(x) + expand * diff(range(x)), length = nr)
+  cdf <- vector(mode = "numeric", length = nr)
+  for (g in seq.int(G)) {
+    cdf <- cdf + pro[g] * pnorm(span, mean[g], sd[g])
+  }
+  quants <- stats::spline(cdf, span, method="fmm", xout=p)$y
+  quants[which(p == 0L)] <- -Inf
+  quants[which(p == 1L)] <- Inf
+  if(any(is.nan(quants)))
+     warning("Some quantile values could not be calculated. Try reducing the value of 'expand' and try again.")
   return(as.vector(quants))
 }
