@@ -16,9 +16,9 @@ qmixnorm <- function (p, mean, sd, pro, expand=1) {
   if (any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
-  if(length(sd)==1) sd[seq(G)] <- sd[1]
+  if(length(sd)==1L) sd[seq(G)] <- sd[1]
   lsd <- length(sd)
-  if(G < lsd | G < lpro | (lsd > 1 & G != lsd) | (!missing(pro) & G != lpro))
+  if(G < lsd | G < lpro | (lsd > 1L & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode = "numeric")
   pro <- pro/sum(pro)

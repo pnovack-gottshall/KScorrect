@@ -18,13 +18,13 @@ rmixnorm <- function (n, mean, sd, pro) {
   lpro <- length(pro)
   modelName = "V"
   lsd <- length(sd)
-  if(lsd==1 & G > 1L) {
+  if(lsd==1L & G > 1L) {
     modelName <- "E"
     sd[seq(G)] <- sd[1]
     lsd <- length(sd)
     warning("'equal variance model' implemented. If want 'variable-variance model', specify remaining 'sd's.")
   }
-  if(G < lsd | G < lpro | (lsd > 1 & G != lsd) | (!missing(pro) & G != lpro))
+  if(G < lsd | G < lpro | (lsd > 1L & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode="numeric")
   pro <- pro/sum(pro)
