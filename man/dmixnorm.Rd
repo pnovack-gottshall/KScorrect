@@ -20,8 +20,9 @@ rmixnorm(n, mean, sd, pro)
 
 \item{mean}{Vector of means, one for each component.}
 
-\item{sd}{Vector of standard deviations. If a single value is provided, an
-equal-variance mixture model is implemented. Must not be negative.}
+\item{sd}{Vector of standard deviations, one for each component. If a single
+value is provided, an equal-variance mixture model is implemented. Must not
+be negative.}
 
 \item{pro}{Vector of mixing proportions, one for each component. If missing,
 an equal-proportion model is implemented, with a warning. If proportions do
@@ -72,16 +73,16 @@ These functions use, modify, and wrap around those from the
   density functions for the specified mixture distribution. Quantile values
   for probabilities near zero and one are approximated by adding and
   subtracting the range of typically observed values by a multiple (specified
-  by \code{(default) expand = 1}). In cases where the distribution range is large
-  (or when mixture components are discrete, with large distances between
-  them), resulting probability values will be very close to zero or one and
-  can result in non-calculable (\code{NaN}) quantiles and a warning. Use of
-  other \code{expand} values (especially \code{expand < 1.0} that expand the
-  ranges by smaller multiples) will often yield proper approximations. Note
-  that \code{expand} values equal to or close to 0 may result in inaccurate
-  approximation of extreme quantiles. If the objective is correct
-  approximation of extreme quantile values, it is recommended to use the
-  largest \code{expand} value that does not result in a warning. See
+  by \code{(default) expand = 1}). In cases where the distribution range is
+  large (or when mixture components are discrete, with large distances
+  between them), resulting probability values will be very close to zero or
+  one and can result in non-calculable (\code{NaN}) quantiles and a warning.
+  Use of other \code{expand} values (especially \code{expand < 1.0} that
+  expand the ranges by smaller multiples) will often yield proper
+  approximations. Note that \code{expand} values equal to or close to 0 may
+  result in inaccurate approximation of extreme quantiles. If the objective
+  is correct approximation of extreme quantile values, it is recommended to
+  use the largest \code{expand} value that does not result in a warning. See
   \code{examples} for confirmation that approximations are accurate,
   comparing the approximate quantiles from a single 'mixture' distribution to
   those calculated analytically for the same distribution using \code{qnorm},
