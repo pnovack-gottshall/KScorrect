@@ -40,6 +40,6 @@ qmixnorm <- function (p, mean, sd, pro, expand=1) {
   quants[which(p == 0L)] <- -Inf
   quants[which(p == 1L)] <- Inf
   if(any(is.nan(quants)))
-     warning("Some quantile values could not be calculated. Try reducing the value of 'expand' and try again.")
+     warning("Some quantile values could not be calculated. If all 'p's are within [0,1], try reducing the value of 'expand' and try again.")
   return(as.vector(quants))
 }
