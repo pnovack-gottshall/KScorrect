@@ -71,23 +71,26 @@ These functions use, modify, and wrap around those from the
   all combinations of mixture parameters. \code{qmixnorm} approximates the
   quantile function using a spline function calculated from cumulative
   density functions for the specified mixture distribution. Quantile values
-  for probabilities near zero and one are approximated by adding and
-  subtracting the range of typically observed values by a multiple (specified
-  by \code{(default) expand = 1}). In cases where the distribution range is
-  large (or when mixture components are discrete, with large distances
-  between them), resulting probability values will be very close to zero or
-  one and can result in non-calculable (\code{NaN}) quantiles and a warning.
-  Use of other \code{expand} values (especially \code{expand < 1.0} that
-  expand the ranges by smaller multiples) will often yield proper
-  approximations. Note that \code{expand} values equal to or close to 0 may
-  result in inaccurate approximation of extreme quantiles. If the objective
-  is correct approximation of extreme quantile values, it is recommended to
-  use the largest \code{expand} value that does not result in a warning. See
-  \code{examples} for confirmation that approximations are accurate,
-  comparing the approximate quantiles from a single 'mixture' distribution to
-  those calculated analytically for the same distribution using \code{qnorm},
-  and demonstrating cases in which using non-default \code{expand} values
-  will allow correct approximation of quantiles.
+  for probabilities near zero and one are approximated by taking a randomly
+  generated sample (with sample size equal to the product of 1000 and the
+  number of mixture components), and expanding that range positively and
+  negatively by a multiple (specified by \code{(default) expand = 1}) of the
+  observed range in the random sample. In cases where the distribution range
+  is large (such as when mixture components are discrete, with large
+  distances between them), resulting extreme probability values will be very
+  close to zero or one and can result in non-calculable (\code{NaN})
+  quantiles (and a warning is called). Use of other \code{expand} values
+  (especially \code{expand < 1.0} that expand the ranges by smaller
+  multiples) will often yield improved approximations. Note that
+  \code{expand} values equal to or close to 0 may result in inaccurate
+  approximation of extreme quantiles. In situations requiring extreme
+  quantile values, it is recommended that the largest \code{expand} value
+  that does not result in a warning be used. See \code{examples} for
+  confirmation that approximations are accurate, comparing the approximate
+  quantiles from a single 'mixture' distribution to those calculated
+  analytically for the same distribution using \code{qnorm}, and
+  demonstrating cases in which using non-default \code{expand} values will
+  allow correct approximation of quantiles.
 }
 \examples{
 # Mixture of two normal distributions
