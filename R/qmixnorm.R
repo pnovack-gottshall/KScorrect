@@ -16,7 +16,6 @@ qmixnorm <- function (p, mean, sd, pro, expand=1) {
   if (any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
-  if(length(sd)==1L) sd[seq(G)] <- sd[1]
   lsd <- length(sd)
   if(lsd==1L & G > 1L) {
     sd[seq(G)] <- sd[1]
