@@ -140,8 +140,8 @@ legend("topleft", legend=c("known", "approximation"), pch=c(NA,1),
 }
 \author{
 Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu} and Steve
-  Wang \email{scwang@swarthmore.edu}, with assistance from Luca Scrucca for
-  \code{pmixnorm} and \code{qmixnorm}.
+  Wang \email{scwang@swarthmore.edu}, based on functions written by Luca
+  Scrucca.
 }
 \seealso{
 \code{\link[stats]{Distributions}} for other standard distributions,
