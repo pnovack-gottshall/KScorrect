@@ -15,8 +15,11 @@ pmixnorm <- function(q, mean, sd, pro) {
   if(any(pro < 0L, sd < 0L))
     stop("'pro' and 'sd' must not be negative.")
   lpro <- length(pro)
-  if(length(sd)==1L) sd[seq(G)] <- sd[1]
   lsd <- length(sd)
+  if(lsd==1L & G > 1L) {
+    sd[seq(G)] <- sd[1]
+    warning("'equal variance model' implemented. If want 'variable-variance model', specify remaining 'sd's.")
+  }
   if(G < lsd | G < lpro | (lsd > 1L & G != lsd) | (!missing(pro) & G != lpro))
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode="numeric")
