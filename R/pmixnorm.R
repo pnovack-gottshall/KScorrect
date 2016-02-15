@@ -18,6 +18,7 @@ pmixnorm <- function(q, mean, sd, pro) {
   lsd <- length(sd)
   if(lsd==1L & G > 1L) {
     sd[seq(G)] <- sd[1]
+    lsd <- length(sd)
     warning("'equal variance model' implemented. If want 'variable-variance model', specify remaining 'sd's.")
   }
   if(G < lsd | G < lpro | (lsd > 1L & G != lsd) | (!missing(pro) & G != lpro))
