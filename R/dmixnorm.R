@@ -24,7 +24,7 @@
 #'   \code{\link[mclust]{sim}}, and \code{\link[mclust]{quantileMclust}}.
 #'   Functions are slightly faster that the corresponding mclust functions when
 #'   used with univariate distributions, and are written for parameterized
-#'   distributions (as opposed to calculation of sample statistics).
+#'   distributions (as opposed to calculation of sample statistics). Note that because these functions are based on user-specified parameters (as opposed to estimation of such parameters in \code{mclust} which limits analyses to a maximum of 9 mixture components), any number of mixture components are allowable.
 #'
 #'   The number of mixture components (argument \code{G} in \code{mclust}) is
 #'   specified from the length of the \code{mean} vector. If a single \code{sd}
@@ -100,6 +100,10 @@
 #'      type="l", main="Normal mixture cumulative")
 #' plot(stats::ppoints(100), qmixnorm(stats::ppoints(100), mean=mean, sd=sd, pro=pro),
 #'      type="l", main="Normal mixture quantile")
+#'
+#' # Any number of mixture components are allowed
+#' plot(seq(0, 50, .01), pmixnorm(seq(0, 50, .01), mean=1:50, sd=.05, pro=rep(1, 50)),
+#'      type="l", main="50-component normal mixture cumulative")
 #'
 #' # 'expand' can be specified to prevent non-calculable quantiles:
 #' q1 <- qmixnorm(stats::ppoints(30), mean=c(1, 20), sd=c(1, 1), pro=c(1, 1))
