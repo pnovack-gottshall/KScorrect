@@ -2,12 +2,11 @@
 #'
 #' Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
 #' goodness-of-fit tests, suitable when population parameters are unknown and
-#' must be estimated by sample statistics. It uses a Monte Carlo resampling
-#' algorithm to estimate \emph{p}-values (and their standard error) from the
-#' resampling distribution. Coded to wrap around \code{\link[stats]{ks.test}},
-#' it can be used with a variety of continuous distributions, including normal,
-#' lognormal, univariate mixtures of normals, uniform, loguniform, exponential,
-#' gamma, and Weibull distributions.
+#' must be estimated by sample statistics. It uses Monte Carlo simulation to
+#' estimate \emph{p}-values (and their standard error). Coded to wrap around
+#' \code{\link[stats]{ks.test}}, it can be used with a variety of continuous
+#' distributions, including normal, lognormal, univariate mixtures of normals,
+#' uniform, loguniform, exponential, gamma, and Weibull distributions.
 #'
 #' @param x A numeric vector of data values (observed sample).
 #' @param cdf Character string naming a cumulative distribution function. Case
@@ -18,7 +17,7 @@
 #'   \code{"plunif"} for loguniform (log-uniform, log uniform), \item
 #'   \code{"pexp"} for exponential, \item \code{"pgamma"} for gamma, \item
 #'   \code{"pweibull"} for Weibull.}
-#' @param nreps Number of replicates to use in resampling algorithm.
+#' @param nreps Number of replicates to use in simulation algorithm.
 #'   \code{Default = 4999} replicates. See \code{details} below. Should be a
 #'   positive integer.
 #' @param G Numeric vector of mixture components to consider, for mixture models
@@ -26,11 +25,11 @@
 #'   integers less than 10. See \code{details} below.
 #'
 #'
-#' @details The function builds a resampling distribution \code{D.resample} of
-#'   length \code{nreps} by drawing random samples from the specified continuous
+#' @details The function builds a simulation distribution \code{D.sim} of length
+#'   \code{nreps} by drawing random samples from the specified continuous
 #'   distribution function \code{cdf} with parameters calculated from the
-#'   provided sample \code{x}. Observed statistic \code{D} and resampled test
-#'   statistics are calculated using \code{\link[stats]{ks.test}}.
+#'   provided sample \code{x}. Observed statistic \emph{\code{D}} and simulated
+#'   test statistics are calculated using \code{\link[stats]{ks.test}}.
 #'
 #'   The default \code{nreps=4999} provides accurate \emph{p}-values (with small
 #'   standard errors). \code{nreps=1999} is sufficient for most cases, and
@@ -38,38 +37,38 @@
 #'   (such as univariate normal mixtures, gamma, and Weibull).
 #'
 #'   The \emph{p}-value is calculated as the number of Monte Carlo samples with
-#'   D test statistics more extreme than that in the observed sample
-#'   \code{D.obs}, divided by the \code{nreps} number of Monte Carlo samples. A
-#'   value of 1 is added to both the numerator and denominator to allow the
-#'   observed sample to be represented within the null distribution (Manly
-#'   2004); this has the benefit of avoiding nonsensical \code{p.value=0.000}
-#'   and accounts for the fact that the \emph{p}-value is an estimate, with an
-#'   associated standard error \code{se}.
+#'   test statistics \emph{D} as extreme as or more extreme than that in the
+#'   observed sample \code{D.obs}, divided by the \code{nreps} number of Monte
+#'   Carlo samples. A value of 1 is added to both the numerator and denominator
+#'   to allow the observed sample to be represented within the null distribution
+#'   (Manly 2004); this has the benefit of avoiding nonsensical
+#'   \code{p.value=0.000} and accounts for the fact that the \emph{p}-value is
+#'   an estimate, with an associated standard error \code{se}.
 #'
-#'   Sample statistics are calculated based on the specified continuous
+#'   Parameter estimates are calculated for the specified continuous
 #'   distribution, using maximum-likelihood estimates. When testing against the
 #'   gamma and Weibull distributions, \code{MASS::\link[MASS]{fitdistr}} is used
-#'   to calculate sample statistics using maximum likelihood optimization, with
-#'   sensible starting values. Because this incorporates an optimization
-#'   routine, the resampling algorithm can be slow if using large \code{nreps}
+#'   to calculate parameter estimates using maximum likelihood optimization,
+#'   with sensible starting values. Because this incorporates an optimization
+#'   routine, the simulation algorithm can be slow if using large \code{nreps}
 #'   or problematic samples. Warnings often occur during these optimizations,
 #'   caused by difficulties estimating sample statistic standard errors. Because
-#'   such SEs are not used in the Lilliefors-corrected resampling algorithm,
+#'   such SEs are not used in the Lilliefors-corrected simulation algorithm,
 #'   warnings are suppressed during these optimizations.
 #'
 #'   Sample statistics for the (univariate) normal mixture distribution
 #'   \code{\link{pmixnorm}} are calculated using package \code{mclust}, which
 #'   uses BIC to identify the optimal mixture model for the sample, and the EM
-#'   algorithm to estimate sample statistics for this model. The number of
+#'   algorithm to calculate parameter estimates for this model. The number of
 #'   mixture components \code{G} (with default allowing up to 9 components),
 #'   variance model (whether equal \code{E} or variable \code{V} variance), and
-#'   component statistics (\code{means, sds}, and mixing proportions \code{pro})
-#'   are estimated from the sample when calculating \code{D.obs} and passed
-#'   internally when creating random Monte Carlo samples. It is possible that
-#'   some of these samples may differ in their optimal \code{G} (for example a
-#'   two-component input sample might yield a three-component random sample
-#'   within the resampling distribution). This can be constrained by specifying
-#'   that resampling BIC-optimizations only consider \code{G} mixture
+#'   component statistics (\code{mean}s, \code{sd}s, and mixing proportions
+#'   \code{pro}) are estimated from the sample when calculating \code{D.obs} and
+#'   passed internally when creating random Monte Carlo samples. It is possible
+#'   that some of these samples may differ in their optimal \code{G} (for
+#'   example a two-component input sample might yield a three-component random
+#'   sample within the simulation distribution). This can be constrained by
+#'   specifying that simulation BIC-optimizations only consider \code{G} mixture
 #'   components.
 #'
 #'   Be aware that constraining \code{G} changes the null hypothesis. The
@@ -77,43 +76,44 @@
 #'   \emph{any \code{G=1:9}-component mixture distribution}. Specifying a
 #'   particular value, such as \code{G=2}, restricts the null hypothesis to
 #'   particular mixture distributions with just \code{G} components, even if
-#'   resampled samples might better be represented as different mixture models.
+#'   simulated samples might better be represented as different mixture models.
 #'
 #'   The \code{LcKS(cdf="pmixnorm")} test implements two control loops to avoid
-#'   errors caused by this constraint and when working with problematical
-#'   samples. The first loop occurs during model-selection for the observed
-#'   sample \code{x}, and allows for estimation of parameters for the
-#'   second-best model when those for the optimal model are not able to be
-#'   calculated by the EM algorithm. A second loop occurs during the resampling
-#'   algorithm, rejecting samples that can not be fit by the mixture model
-#'   specified by the observed sample \code{x}. Such problematic cases are most
-#'   common when the observed or resampled samples have a component(s) with very
-#'   small variance (i.e., duplicate observations) or when a Monte Carlo sample
-#'   can not be fit by the specified \code{G}.
+#'   errors caused by this constraint and when working with problematic samples.
+#'   The first loop occurs during model-selection for the observed sample
+#'   \code{x}, and allows for estimation of parameters for the second-best model
+#'   when those for the optimal model are not able to be calculated by the EM
+#'   algorithm. A second loop occurs during the simulation algorithm, rejecting
+#'   samples that cannot be fit by the mixture model specified by the observed
+#'   sample \code{x}. Such problematic cases are most common when the observed
+#'   or simulated samples have a component(s) with very small variance (i.e.,
+#'   duplicate observations) or when a Monte Carlo sample cannot be fit by the
+#'   specified \code{G}.
 #'
 #' @return A list containing the following components:
 #'
-#'   \item{D.obs}{The value of the test statistic D for the observed sample.}
-#'   \item{D.resample}{Resampling distribution of test statistics, with
+#'   \item{D.obs}{The value of the test statistic \emph{D} for the observed
+#'   sample.} \item{D.sim}{Simulation distribution of test statistics, with
 #'   \code{length=nreps}. This can be used to calculate critical values; see
 #'   examples.} \item{p.value}{\emph{p}-value of the test, calculated as
-#'   \eqn{(\sum(D.resampled > D.obs) + 1) / (nreps + 1)}.} \item{se}{Standard
-#'   error for the \emph{p}-value, calculated as \eqn{\sqrt(p.value * (1 -
-#'   p.value) / nreps)}.}
+#'   \eqn{(\sum(D.sim > D.obs) + 1) / (nreps + 1)}.} \item{se}{Standard error
+#'   for the \emph{p}-value, calculated as \eqn{\sqrt(p.value * (1 - p.value) /
+#'   nreps)}.}
 #'
 #' @note The Kolmogorov-Smirnoff (such as \code{ks.test}) is only valid as a
-#'   goodness-of-fit test when the population parameters are known absolutely.
-#'   This is typically not the case in practice. This invalidation occurs
-#'   because estimating the parameters changes the null distribution of the test
+#'   goodness-of-fit test when the population parameters are known. This is
+#'   typically not the case in practice. This invalidation occurs because
+#'   estimating the parameters changes the null distribution of the test
 #'   statistic; i.e., using the sample to estimate population parameters brings
-#'   the Kolmogorov-Smirnoff test statistic D closer to the null distribution
-#'   than it would be under the hypothesis where the population parameters are
-#'   unknown (Gihman 1952). In other words, it is biased with an increased Type
-#'   II error. Lilliefors (1967, 1969) provided a solution, using Monte Carlo
-#'   methods to approximate the shape of the null distribution when the sample
-#'   statistics are used as population parameters, and to use this null
-#'   distribution as the basis for critical values. The function \code{LcKS}
-#'   generalizes this solution for a range of continuous distributions.
+#'   the Kolmogorov-Smirnoff test statistic \emph{D} closer to the null
+#'   distribution than it would be under the hypothesis where the population
+#'   parameters are known (Gihman 1952). In other words, it is biased and
+#'   results in increased Type II error rates. Lilliefors (1967, 1969) provided a
+#'   solution, using Monte Carlo simulation to approximate the shape of the null
+#'   distribution when the sample statistics are used to estimate population
+#'   parameters, and to use this null distribution as the basis for critical
+#'   values. The function \code{LcKS} generalizes this solution for a range of
+#'   continuous distributions.
 
 #' @author Phil Novack-Gottshall \email{pnovack-gottshall@@ben.edu}, based on
 #'   code from Charles Geyer (University of Minnesota).
@@ -143,12 +143,12 @@
 #' @examples
 #' x <- runif(200)
 #' Lc <- LcKS(x, cdf="pnorm", nreps=999)
-#' hist(Lc$D.resample)
+#' hist(Lc$D.sim)
 #' abline(v = Lc$D.obs, lty = 2)
-#' print(Lc, max=50)  # Just print first 50 resampled statistics
+#' print(Lc, max=50)  # Print first 50 simulated statistics
 #' # Approximate p-value (usually) << 0.05
 #'
-#' # Confirmation uncorrected version has elevated Type II error rate when
+#' # Confirmation uncorrected version has increased Type II error rate when
 #' #   using sample statistics to estimate parameters:
 #' ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 #'
@@ -156,22 +156,22 @@
 #' nreps <- 9999
 #' x <- rnorm(25)
 #' Lc <- LcKS(x, "pnorm", nreps=nreps)
-#' res.Ds <- sort(Lc$D.resample)
+#' sim.Ds <- sort(Lc$D.sim)
 #' crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 #' # Lilliefors' (1967) critical values, using improved values from
 #' #   Parsons & Wirsching (1982) (for n=25):
 #' # 0.141 0.148 0.157 0.172 0.201
-#' round(res.Ds[crit], 3)			# Approximate critical values (converges as nreps increases)
+#' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
-#' # Confirm critical values for exponential the same as reported by Lilliefors (1969)
+#' # Confirm critical values for exponential are the same as reported by Lilliefors (1969)
 #' nreps <- 9999
 #' x <- rexp(25)
 #' Lc <- LcKS(x, "pexp", nreps=nreps)
-#' res.Ds <- sort(Lc$D.resample)
+#' sim.Ds <- sort(Lc$D.sim)
 #' crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 #' # Lilliefors' (1969) critical values (for n=25):
 #' # 0.170 0.180 0.191 0.210 0.247
-#' round(res.Ds[crit], 3)			# Approximate critical values (converges as nreps increases)
+#' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
 #' \dontrun{
 #' # Gamma and Weibull tests require functions from the 'MASS' package
@@ -185,11 +185,11 @@
 #' nreps <- 9999
 #' x <- rweibull(25, shape=1, scale=1)
 #' Lc <- LcKS(x, "pweibull", nreps=nreps)
-#' res.Ds <- sort(Lc$D.resample)
+#' sim.Ds <- sort(Lc$D.sim)
 #' crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 #' # Parsons & Wirsching (1982) critical values (for n=25):
 #' # 0.141 0.148 0.157 0.172 0.201
-#' round(res.Ds[crit], 3)			# Approximate critical values (converges as nreps increases)
+#' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
 #' # Mixture test requires functions from the 'mclust' package
 #' # Takes time to identify model parameters
@@ -197,7 +197,7 @@
 #' x <- rmixnorm(200, mean=c(10, 20), sd=2, pro=c(1,3))
 #' Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=1:9)   # Default G (1:9) takes long time
 #' Lc$p.value
-#' G <- Mclust(x)$parameters$variance$G             # Optimal model has only two components
+#' G <- Mclust(x)$parameters$variance$G              # Optimal model has only two components
 #' Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=G)     # Restricting to likely G saves time
 #' # But note changes null hypothesis: now testing against just two-component mixture
 #' Lc$p.value
@@ -237,14 +237,14 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
   if (any(G < 1 || G > 9))
     stop("'G' must be integer or vector of integers spanning 1:9.")
   n <- length(x)
-  D.resample <- rep(NA, nreps)
+  D.sim <- rep(NA, nreps)
   if(cdf=="pnorm") {
     mean.x <- mean(x)
     sd.x <- sd(x)
     D.obs <- as.vector(ks.test(x, "pnorm", mean=mean.x, sd=sd.x)$statistic)
     for (i in 1:nreps) {
-      x.resample <- rnorm(n, mean=mean.x, sd=sd.x)
-      D.resample[i] <- as.vector(ks.test(x.resample, "pnorm", mean=mean(x.resample), sd=sd(x.resample))$statistic)
+      x.sim <- rnorm(n, mean=mean.x, sd=sd.x)
+      D.sim[i] <- as.vector(ks.test(x.sim, "pnorm", mean=mean(x.sim), sd=sd(x.sim))$statistic)
     }
   }
   if(cdf=="plnorm") {
@@ -254,8 +254,8 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     sdlog.x <- sd(log(x))
     D.obs <- as.vector(ks.test(x, "plnorm", meanlog=meanlog.x, sdlog=sdlog.x)$statistic)
     for (i in 1:nreps) {
-      x.resample <- rlnorm(n, meanlog=meanlog.x, sdlog=sdlog.x)
-      D.resample[i] <- as.vector(ks.test(x.resample, "plnorm", meanlog=mean(log(x.resample)), sdlog=sd(log(x.resample)))$statistic)
+      x.sim <- rlnorm(n, meanlog=meanlog.x, sdlog=sdlog.x)
+      D.sim[i] <- as.vector(ks.test(x.sim, "plnorm", meanlog=mean(log(x.sim)), sdlog=sd(log(x.sim)))$statistic)
     }
   }
   if(cdf=="punif") {
@@ -263,8 +263,8 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     max.x <- max(x)
     D.obs <- as.vector(ks.test(x, "punif", min=min.x, max=max.x)$statistic)
     for (i in 1:nreps) {
-      x.resample <- runif(n, min=min.x, max=max.x)
-      D.resample[i] <- as.vector(ks.test(x.resample, "punif", min=min(x.resample), max=max(x.resample))$statistic)
+      x.sim <- runif(n, min=min.x, max=max.x)
+      D.sim[i] <- as.vector(ks.test(x.sim, "punif", min=min(x.sim), max=max(x.sim))$statistic)
     }
   }
   if(cdf=="plunif") {
@@ -274,8 +274,8 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     max.x <- max(x)
     D.obs <- as.vector(ks.test(x, "plunif", min=min.x, max=max.x)$statistic)
     for (i in 1:nreps) {
-      x.resample <- rlunif(n, min=min.x, max=max.x)
-      D.resample[i] <- as.vector(ks.test(x.resample, "plunif", min=min(x.resample), max=max(x.resample))$statistic)
+      x.sim <- rlunif(n, min=min.x, max=max.x)
+      D.sim[i] <- as.vector(ks.test(x.sim, "plunif", min=min(x.sim), max=max(x.sim))$statistic)
     }
   }
   if(cdf=="pmixnorm") {
@@ -297,15 +297,15 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
       warning("Optimal mixture model for supplied sample has a single component: it is not a mixture model. Use 'pnorm' or 'plnorm' instead.")
     i <- 0
     while(i < nreps) {
-      x.resample <- rmixnorm(n, mean=mean.x, pro=pro.x, sd=sd.x)
-      attempt <- try(mclust::Mclust(x.resample, G=G)$parameters, silent=TRUE)
+      x.sim <- rmixnorm(n, mean=mean.x, pro=pro.x, sd=sd.x)
+      attempt <- try(mclust::Mclust(x.sim, G=G)$parameters, silent=TRUE)
       if(inherits(attempt, "try-error")) { next }
-      param.res <- attempt
+      param.sim <- attempt
       i <- i + 1
-      mean.res <- param.res$mean
-      sd.res <- sqrt(param.res$variance$sigmasq)
-      pro.res <- param.res$pro
-      D.resample[i] <- as.vector(ks.test(x.resample, "pmixnorm", mean=mean.res, sd=sd.res, pro=pro.res)$statistic)
+      mean.sim <- param.sim$mean
+      sd.sim <- sqrt(param.sim$variance$sigmasq)
+      pro.sim <- param.sim$pro
+      D.sim[i] <- as.vector(ks.test(x.sim, "pmixnorm", mean=mean.sim, sd=sd.sim, pro=pro.sim)$statistic)
     }
   }
   if(cdf=="pexp") {
@@ -314,8 +314,8 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     rate.x <- 1 / mean(x)
     D.obs <- as.vector(ks.test(x, "pexp", rate=rate.x)$statistic)
     for (i in 1:nreps) {
-      x.resample <- rexp(n, rate=rate.x)
-      D.resample[i] <- as.vector(ks.test(x.resample, "pexp", rate=(1/mean(x.resample)))$statistic)
+      x.sim <- rexp(n, rate=rate.x)
+      D.sim[i] <- as.vector(ks.test(x.sim, "pexp", rate=(1/mean(x.sim)))$statistic)
     }
   }
   if(cdf=="pgamma") {
@@ -328,12 +328,12 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     param[2] <- param[2] * scale.x	# Re-scale back
     D.obs <- as.vector(ks.test(x, "pgamma", shape=param[1], scale=param[2])$statistic)
     for (i in 1:nreps) {
-      x.resample <- rgamma(n, shape=param[1], scale=param[2])
-      shape.res <- mean(x.resample)^2 / var(x.resample)
-      scale.res <- var(x.resample) / mean(x.resample)
-      param.res <- as.vector(suppressWarnings(MASS::fitdistr(x.resample/scale.res, densfun="gamma", start=list(shape=shape.res, scale=scale.res/scale.res), control=list(maxit=25000))$estimate))
-      param.res[2] <- param.res[2] * scale.res	# Re-scale back
-      D.resample[i] <- as.vector(ks.test(x.resample, "pgamma", shape=param.res[1], scale=param.res[2])$statistic)
+      x.sim <- rgamma(n, shape=param[1], scale=param[2])
+      shape.sim <- mean(x.sim)^2 / var(x.sim)
+      scale.sim <- var(x.sim) / mean(x.sim)
+      param.sim <- as.vector(suppressWarnings(MASS::fitdistr(x.sim/scale.sim, densfun="gamma", start=list(shape=shape.sim, scale=scale.sim/scale.sim), control=list(maxit=25000))$estimate))
+      param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
+      D.sim[i] <- as.vector(ks.test(x.sim, "pgamma", shape=param.sim[1], scale=param.sim[2])$statistic)
     }
   }
   if(cdf=="pweibull") {
@@ -346,16 +346,16 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     param[2] <- param[2] * scale.x	# Re-scale back
     D.obs <- as.vector(ks.test(x, "pweibull", shape=param[1], scale=param[2])$statistic)
     for (i in 1:nreps) {
-      x.resample <- rweibull(n, shape=param[1], scale=param[2])
-      shape.res <- 1.2 / sd(log(x.resample))
-      scale.res <- exp(mean(log(x.resample)) + 0.572/shape.res)
-      param.res <- as.vector(suppressWarnings(fitdistr(x.resample/scale.res, densfun="weibull", start=list(shape=shape.res, scale=scale.res/scale.res), control=list(maxit=25000))$estimate))
-      param.res[2] <- param.res[2] * scale.res	# Re-scale back
-      D.resample[i] <- as.vector(ks.test(x.resample, "pweibull", shape=param.res[1], scale=param.res[2])$statistic)
+      x.sim <- rweibull(n, shape=param[1], scale=param[2])
+      shape.sim <- 1.2 / sd(log(x.sim))
+      scale.sim <- exp(mean(log(x.sim)) + 0.572/shape.sim)
+      param.sim <- as.vector(suppressWarnings(fitdistr(x.sim/scale.sim, densfun="weibull", start=list(shape=shape.sim, scale=scale.sim/scale.sim), control=list(maxit=25000))$estimate))
+      param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
+      D.sim[i] <- as.vector(ks.test(x.sim, "pweibull", shape=param.sim[1], scale=param.sim[2])$statistic)
     }
   }
-  p.value <- (sum(D.resample > D.obs) + 1) / (nreps + 1)
+  p.value <- (sum(D.sim > D.obs) + 1) / (nreps + 1)
   se <- sqrt(p.value * (1 - p.value) / nreps)
-  out <- list(D.obs=D.obs, D.resample=D.resample, p.value=p.value, se=se)
+  out <- list(D.obs=D.obs, D.sim=D.sim, p.value=p.value, se=se)
   return(out)
   }

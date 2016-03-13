@@ -21,12 +21,12 @@ rmixnorm(n, mean, sd, pro)
 \item{mean}{Vector of means, one for each component.}
 
 \item{sd}{Vector of standard deviations, one for each component. If a single
-value is provided, an equal-variance mixture model is implemented. Must not
-be negative.}
+value is provided, an equal-variance mixture model is implemented. Must be
+non-negative.}
 
 \item{pro}{Vector of mixing proportions, one for each component. If missing,
 an equal-proportion model is implemented, with a warning. If proportions do
-not sum to unity, they are rescaled to do so. Must not be negative.}
+not sum to unity, they are rescaled to do so. Must be non-negative.}
 
 \item{q}{Vector of quantiles.}
 
@@ -52,9 +52,15 @@ distributions with means equal to \code{mean}, standard deviations equal to
 These functions use, modify, and wrap around those from the
   \code{mclust} package, especially \code{\link[mclust]{dens}},
   \code{\link[mclust]{sim}}, and \code{\link[mclust]{quantileMclust}}.
-  Functions are slightly faster that the corresponding mclust functions when
-  used with univariate distributions, and are written for parameterized
-  distributions (as opposed to calculation of sample statistics). Note that because these functions are based on user-specified parameters (as opposed to estimation of such parameters in \code{mclust} which limits analyses to a maximum of 9 mixture components), any number of mixture components are allowable.
+  Functions are slightly faster than the corresponding \code{mclust}
+  functions when used with univariate distributions.
+
+  Unlike \code{mclust}, which primarily focuses on parameter estimation of
+  mixture samples, the functions here are modified to calculate PDFs, CDFs,
+  approximate quantiles, and random numbers for mixture distributions with
+  user-specified parameters. Because of these modifications, any number of
+  mixture components can be specified (i.e., unlike \code{mclust} which
+  limits parameter estimation to a maximum of 9 mixture components).
 
   The number of mixture components (argument \code{G} in \code{mclust}) is
   specified from the length of the \code{mean} vector. If a single \code{sd}
@@ -62,10 +68,9 @@ These functions use, modify, and wrap around those from the
   in \code{mclust}) is implemented; if multiple values are provided, a
   variable-variance model (\code{modelNames="V"} in \code{mclust}) is
   implemented. If mixing proportion \code{pro} is missing, all components are
-  assigned equal mixing proportions, with a warning called. If supplied
-  proportions do not sum to unity, they are rescaled to do so. If the lengths
-  of supplied means, standard deviations, and mixing proportions conflict, an
-  error is called.
+  assigned equal mixing proportions, with a warning. Mixing proportions are
+  rescaled to sum to unity. If the lengths of supplied means, standard
+  deviations, and mixing proportions conflict, an error is called.
 
   Analytical solutions are not available to calculate a quantile function for
   all combinations of mixture parameters. \code{qmixnorm} approximates the
@@ -76,21 +81,21 @@ These functions use, modify, and wrap around those from the
   number of mixture components), and expanding that range positively and
   negatively by a multiple (specified by \code{(default) expand = 1}) of the
   observed range in the random sample. In cases where the distribution range
-  is large (such as when mixture components are discrete, with large
-  distances between them), resulting extreme probability values will be very
-  close to zero or one and can result in non-calculable (\code{NaN})
-  quantiles (and a warning is called). Use of other \code{expand} values
-  (especially \code{expand < 1.0} that expand the ranges by smaller
-  multiples) will often yield improved approximations. Note that
-  \code{expand} values equal to or close to 0 may result in inaccurate
-  approximation of extreme quantiles. In situations requiring extreme
-  quantile values, it is recommended that the largest \code{expand} value
-  that does not result in a warning be used. See \code{examples} for
+  is large (such as when mixture components are discrete or there are large
+  distances between components), resulting extreme probability values will be
+  very close to zero or one and can result in non-calculable (\code{NaN})
+  quantiles (and a warning). Use of other \code{expand} values (especially
+  \code{expand < 1.0} that expand the ranges by smaller multiples) often will
+  yield improved approximations. Note that \code{expand} values equal to or
+  close to 0 may result in inaccurate approximation of extreme quantiles. In
+  situations requiring extreme quantile values, it is recommended that the
+  largest \code{expand} value that does not result in a non-calculable
+  quantile (i.e., no warning called) be used. See \code{examples} for
   confirmation that approximations are accurate, comparing the approximate
-  quantiles from a single 'mixture' distribution to those calculated
-  analytically for the same distribution using \code{qnorm}, and
-  demonstrating cases in which using non-default \code{expand} values will
-  allow correct approximation of quantiles.
+  quantiles from a single 'mixture' distribution to those calculated for the
+  same distribution using \code{qnorm}, and demonstrating cases in which
+  using non-default \code{expand} values will allow correct approximation of
+  quantiles.
 }
 \examples{
 # Mixture of two normal distributions

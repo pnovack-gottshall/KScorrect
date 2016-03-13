@@ -50,7 +50,10 @@ A log uniform (or loguniform or log-uniform) random variable has a
 }
 \note{
 Parameters \code{min, max} must be provided as raw (not
-  log-transformed) values and will be log-transformed using \code{base}.
+  log-transformed) values and will be log-transformed using \code{base}. In
+  other words, when log-transformed, a log uniform random variable with
+  parameters \code{min=a} and \code{max=b} is uniform over the interval from
+  \code{log(a)} to \code{log(b)}.
 }
 \examples{
 plot(1:100, dlunif(1:100, exp(1), exp(10)), type="l", main="Loguniform density")

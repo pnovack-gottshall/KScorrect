@@ -24,7 +24,10 @@
 #'   generates random numbers.
 #'
 #' @note Parameters \code{min, max} must be provided as raw (not
-#'   log-transformed) values and will be log-transformed using \code{base}.
+#'   log-transformed) values and will be log-transformed using \code{base}. In
+#'   other words, when log-transformed, a log uniform random variable with
+#'   parameters \code{min=a} and \code{max=b} is uniform over the interval from
+#'   \code{log(a)} to \code{log(b)}.
 #'
 #' @author Steve Wang \email{scwang@@swarthmore.edu}
 #'
