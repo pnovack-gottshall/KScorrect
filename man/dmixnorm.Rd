@@ -132,7 +132,7 @@ plot(seq(0, 50, .01), pmixnorm(seq(0, 50, .01), mean=1:50, sd=.05, pro=rep(1, 50
 # 'expand' can be specified to prevent non-calculable quantiles:
 q1 <- qmixnorm(stats::ppoints(30), mean=c(1, 20), sd=c(1, 1), pro=c(1, 1))
 q1 # Calls a warning because of NaNs
-# Reduce 'exand'. (Values < 0.8 allow correct approximation)
+# Reduce 'expand'. (Values < 0.8 allow correct approximation)
 q2 <- qmixnorm(stats::ppoints(30), mean=c(1, 20), sd=c(1, 1), pro=c(1, 1), expand=.5)
 plot(stats::ppoints(30), q2, type="l", main="Quantile with reduced range")
 
