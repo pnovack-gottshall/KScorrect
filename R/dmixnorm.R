@@ -25,14 +25,14 @@
 #'   Functions are slightly faster than the corresponding \code{mclust}
 #'   functions when used with univariate distributions.
 #'
-#'   Unlike \code{mclust}, which primarily focuses on parameter estimation of
-#'   mixture samples, the functions here are modified to calculate PDFs, CDFs,
-#'   approximate quantiles, and random numbers for mixture distributions with
-#'   user-specified parameters. Because of these modifications, any number of
-#'   mixture components can be specified (i.e., unlike \code{mclust} which
-#'   limits parameter estimation to a maximum of 9 mixture components). The
-#'   functions are written to emulate the syntax of other R distribution
-#'   functions (e.g., \code{\link[stats]{dnorm}}).
+#'   Unlike \code{mclust}, which primarily focuses on parameter estimation based
+#'   on mixture samples, the functions here are modified to calculate PDFs,
+#'   CDFs, approximate quantiles, and random numbers for mixture distributions
+#'   with user-specified parameters. Because of these modifications, any number
+#'   of mixture components can be specified (unlike \code{mclust} which limits
+#'   parameter estimation to a maximum of 9 mixture components). The functions
+#'   are written to emulate the syntax of other R distribution functions (e.g.,
+#'   \code{\link[stats]{dnorm}}).
 #'
 #'   The number of mixture components (argument \code{G} in \code{mclust}) is
 #'   specified from the length of the \code{mean} vector. If a single \code{sd}
