@@ -8,4 +8,4 @@
 * Corrected behavior when single 'sd' specified in mixture model functions so that results in equal-variance mixture model, and calls warning to alert to behavior
 
 # KScorrect 1.0.0
-* First release.
+* First release (to GitHub).
