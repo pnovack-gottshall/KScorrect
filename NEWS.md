@@ -1,3 +1,7 @@
+# KScorrect 1.2.0
+* Text clarifications to Help files prior to posting to CRAN.
+* Removed calculation of standard error in LcKS.
+
 # KScorrect 1.1.0
 * Steve Wang re-wrote qmixnorm to improve performance and make the function more compatible with behavior in other quantile functions, such as qnorm.
 * Improved handling of extreme probabilities in qmixnorm, based on algorithm by Luca Scrucca.
