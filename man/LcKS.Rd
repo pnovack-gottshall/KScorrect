@@ -33,18 +33,16 @@ A list containing the following components:
   sample.} \item{D.sim}{Simulation distribution of test statistics, with
   \code{length=nreps}. This can be used to calculate critical values; see
   examples.} \item{p.value}{\emph{p}-value of the test, calculated as
-  \eqn{(\sum(D.sim > D.obs) + 1) / (nreps + 1)}.} \item{se}{Standard error
-  for the \emph{p}-value, calculated as \eqn{\sqrt(p.value * (1 - p.value) /
-  nreps)}.}
+  \eqn{(\sum(D.sim > D.obs) + 1) / (nreps + 1)}.}
 }
 \description{
 Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
 goodness-of-fit tests, suitable when population parameters are unknown and
 must be estimated by sample statistics. It uses Monte Carlo simulation to
-estimate \emph{p}-values (and their standard error). Coded to wrap around
-\code{\link[stats]{ks.test}}, it can be used with a variety of continuous
-distributions, including normal, lognormal, univariate mixtures of normals,
-uniform, loguniform, exponential, gamma, and Weibull distributions.
+estimate \emph{p}-values. Coded to wrap around \code{\link[stats]{ks.test}},
+it can be used with a variety of continuous distributions, including normal,
+lognormal, univariate mixtures of normals, uniform, loguniform, exponential,
+gamma, and Weibull distributions.
 }
 \details{
 The function builds a simulation distribution \code{D.sim} of length
@@ -53,10 +51,10 @@ The function builds a simulation distribution \code{D.sim} of length
   provided sample \code{x}. Observed statistic \emph{\code{D}} and simulated
   test statistics are calculated using \code{\link[stats]{ks.test}}.
 
-  The default \code{nreps=4999} provides accurate \emph{p}-values (with small
-  standard errors). \code{nreps=1999} is sufficient for most cases, and
-  computationally faster when dealing with more complicated distributions
-  (such as univariate normal mixtures, gamma, and Weibull).
+  The default \code{nreps=4999} provides accurate \emph{p}-values.
+  \code{nreps=1999} is sufficient for most cases, and computationally faster
+  when dealing with more complicated distributions (such as univariate normal
+  mixtures, gamma, and Weibull).
 
   The \emph{p}-value is calculated as the number of Monte Carlo samples with
   test statistics \emph{D} as extreme as or more extreme than that in the
@@ -65,7 +63,7 @@ The function builds a simulation distribution \code{D.sim} of length
   to allow the observed sample to be represented within the null distribution
   (Manly 2004); this has the benefit of avoiding nonsensical
   \code{p.value=0.000} and accounts for the fact that the \emph{p}-value is
-  an estimate, with an associated standard error \code{se}.
+  an estimate.
 
   Parameter estimates are calculated for the specified continuous
   distribution, using maximum-likelihood estimates. When testing against the
@@ -121,12 +119,12 @@ The Kolmogorov-Smirnoff (such as \code{ks.test}) is only valid as a
   the Kolmogorov-Smirnoff test statistic \emph{D} closer to the null
   distribution than it would be under the hypothesis where the population
   parameters are known (Gihman 1952). In other words, it is biased and
-  results in increased Type II error rates. Lilliefors (1967, 1969) provided a
-  solution, using Monte Carlo simulation to approximate the shape of the null
-  distribution when the sample statistics are used to estimate population
-  parameters, and to use this null distribution as the basis for critical
-  values. The function \code{LcKS} generalizes this solution for a range of
-  continuous distributions.
+  results in increased Type II error rates. Lilliefors (1967, 1969) provided
+  a solution, using Monte Carlo simulation to approximate the shape of the
+  null distribution when the sample statistics are used to estimate
+  population parameters, and to use this null distribution as the basis for
+  critical values. The function \code{LcKS} generalizes this solution for a
+  range of continuous distributions.
 }
 \examples{
 x <- runif(200)
