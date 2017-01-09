@@ -1,3 +1,6 @@
+# KScorrect 1.3.0
+* Improved text, with corrected textual errors
+
 # KScorrect 1.2.0
 * Text clarifications to Help files prior to posting to CRAN.
 * Removed calculation of standard error in LcKS.

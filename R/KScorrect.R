@@ -1,9 +1,9 @@
-#' KScorrect: Lilliefors-Corrected Kolmogorov-Smirnoff Goodness-of-Fit Tests
+#' KScorrect: Lilliefors-Corrected Kolmogorov-Smirnov Goodness-of-Fit Tests
 #'
-#' Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
+#' Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use in
 #' goodness-of-fit tests.
 #'
-#' KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnoff test for
+#' KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnov test for
 #' use in goodness-of-fit tests, suitable when population parameters are unknown
 #' and must be estimated by sample statistics. \emph{P}-values are estimated by
 #' simulation. Coded to complement \code{\link[stats]{ks.test}}, it can be used
