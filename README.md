@@ -1,6 +1,6 @@
-## KScorrect R package for Lilliefors-corrected Kolmogorov-Smirnoff goodness-of-fit tests
+## KScorrect R package for Lilliefors-corrected Kolmogorov-Smirnov goodness-of-fit tests
 
-KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use 
+KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnov test for use 
 in goodness-of-fit tests, suitable when population parameters are unknown and 
 must be estimated by sample statistics. P-values are estimated by simulation.
 Coded to complement stats::ks.test, it can be used with a variety of continuous
