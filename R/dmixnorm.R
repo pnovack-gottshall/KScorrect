@@ -28,10 +28,8 @@
 #'   Unlike \code{mclust}, which primarily focuses on parameter estimation based
 #'   on mixture samples, the functions here are modified to calculate PDFs,
 #'   CDFs, approximate quantiles, and random numbers for mixture distributions
-#'   with user-specified parameters. Because of these modifications, any number
-#'   of mixture components can be specified (unlike \code{mclust} which limits
-#'   parameter estimation to a maximum of 9 mixture components). The functions
-#'   are written to emulate the syntax of other R distribution functions (e.g.,
+#'   with user-specified parameters. The functions are written to emulate the
+#'   syntax of other R distribution functions (e.g.,
 #'   \code{\link[stats]{dnorm}}).
 #'
 #'   The number of mixture components (argument \code{G} in \code{mclust}) is

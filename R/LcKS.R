@@ -22,7 +22,7 @@
 #'   positive integer.
 #' @param G Numeric vector of mixture components to consider, for mixture models
 #'   only. \code{Default = 1:9} fits up to 9 components. Must contain positive
-#'   integers less than 10. See \code{details} below.
+#'   integers. See \code{details} below.
 #'
 #'
 #' @details The function builds a simulation distribution \code{D.sim} of length
@@ -232,8 +232,8 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     stop("'G' supplied not consistent with mixture model. Use 'pnorm' or 'plnorm' instead.")
   if (!identical(G, 1:9) && cdf != "pmixnorm")
     warning("'G' is ignored except when cdf='pmixnorm'.")
-  if (any(G < 1 || G > 9))
-    stop("'G' must be integer or vector of integers spanning 1:9.")
+  if (any(G < 1))
+    stop("'G' must be a positive integer or vector of positive integers.")
   n <- length(x)
   D.sim <- rep(NA, nreps)
   if(cdf=="pnorm") {
