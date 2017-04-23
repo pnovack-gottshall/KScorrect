@@ -2,7 +2,7 @@
 % Please edit documentation in R/LcKS.R
 \name{LcKS}
 \alias{LcKS}
-\title{Lilliefors-corrected Kolmogorov-Smirnoff Goodness-Of-Fit Test}
+\title{Lilliefors-corrected Kolmogorov-Smirnov Goodness-Of-Fit Test}
 \usage{
 LcKS(x, cdf, nreps = 4999, G = 1:9)
 }
@@ -24,7 +24,7 @@ positive integer.}
 
 \item{G}{Numeric vector of mixture components to consider, for mixture models
 only. \code{Default = 1:9} fits up to 9 components. Must contain positive
-integers less than 10. See \code{details} below.}
+integers. See \code{details} below.}
 }
 \value{
 A list containing the following components:
@@ -36,7 +36,7 @@ A list containing the following components:
   \eqn{(\sum(D.sim > D.obs) + 1) / (nreps + 1)}.}
 }
 \description{
-Implements the Lilliefors-corrected Kolmogorov-Smirnoff test for use in
+Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use in
 goodness-of-fit tests, suitable when population parameters are unknown and
 must be estimated by sample statistics. It uses Monte Carlo simulation to
 estimate \emph{p}-values. Coded to wrap around \code{\link[stats]{ks.test}},
@@ -111,12 +111,12 @@ The function builds a simulation distribution \code{D.sim} of length
   specified \code{G}.
 }
 \note{
-The Kolmogorov-Smirnoff (such as \code{ks.test}) is only valid as a
+The Kolmogorov-Smirnov (such as \code{ks.test}) is only valid as a
   goodness-of-fit test when the population parameters are known. This is
   typically not the case in practice. This invalidation occurs because
   estimating the parameters changes the null distribution of the test
   statistic; i.e., using the sample to estimate population parameters brings
-  the Kolmogorov-Smirnoff test statistic \emph{D} closer to the null
+  the Kolmogorov-Smirnov test statistic \emph{D} closer to the null
   distribution than it would be under the hypothesis where the population
   parameters are known (Gihman 1952). In other words, it is biased and
   results in increased Type II error rates. Lilliefors (1967, 1969) provided
