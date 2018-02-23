@@ -1,3 +1,6 @@
+# KScorrect 1.5.0 (2018-02-23)
+* Reformatted functions to Google / Hadley style
+
 # KScorrect 1.4.0 (2017-04-23)
 * Clarify text so better explains behavior based on 'mclust' package functions.
 

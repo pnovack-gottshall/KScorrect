@@ -47,9 +47,9 @@
 #'
 #' @export
 dlunif <- function(x, min, max, base=exp(1))  {
-  if(mode(x) != "numeric")
+  if (mode(x) != "numeric")
     stop("'x' must be a non-empty numeric vector")
-  if(any(missing(min), missing(max)))
+  if (any(missing(min), missing(max)))
     stop("'min' and 'max' not provided, without default.\n")
-  return(1/(log(max,base)-log(min,base)) * 1/x)
+  return(1 / (log(max, base) - log(min, base)) * 1 / x)
 }

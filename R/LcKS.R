@@ -225,8 +225,9 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
   if (missing(cdf) || !is.character(cdf))
     stop("'cdf' must be a character string.")
   cdf <- tolower(cdf)
-  allowed <- c("pnorm", "plnorm", "punif", "plunif", "pmixnorm", "pexp", "pgamma", "pweibull")
-  if(!(cdf %in% allowed))
+  allowed <- c("pnorm", "plnorm", "punif", "plunif", "pmixnorm", "pexp",
+               "pgamma", "pweibull")
+  if (!(cdf %in% allowed))
     stop("'cdf' is not a supported distribution function.")
   if (length(G) == 1L && G == 1 && cdf == "pmixnorm")
     stop("'G' supplied not consistent with mixture model. Use 'pnorm' or 'plnorm' instead.")
@@ -236,123 +237,183 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     stop("'G' must be a positive integer or vector of positive integers.")
   n <- length(x)
   D.sim <- rep(NA, nreps)
-  if(cdf=="pnorm") {
+  if (cdf == "pnorm") {
     mean.x <- mean(x)
     sd.x <- sd(x)
-    D.obs <- as.vector(ks.test(x, "pnorm", mean=mean.x, sd=sd.x)$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "pnorm", mean = mean.x, sd = sd.x)$statistic)
     for (i in 1:nreps) {
-      x.sim <- rnorm(n, mean=mean.x, sd=sd.x)
-      D.sim[i] <- as.vector(ks.test(x.sim, "pnorm", mean=mean(x.sim), sd=sd(x.sim))$statistic)
+      x.sim <- rnorm(n, mean = mean.x, sd = sd.x)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "pnorm", mean = mean(x.sim),
+                          sd = sd(x.sim))$statistic)
     }
   }
-  if(cdf=="plnorm") {
+  if (cdf == "plnorm") {
     if (any(x <= 0))
       stop("'x' values must be > 0 for lognormal distributions.")
     meanlog.x <- mean(log(x))
     sdlog.x <- sd(log(x))
-    D.obs <- as.vector(ks.test(x, "plnorm", meanlog=meanlog.x, sdlog=sdlog.x)$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "plnorm", meanlog = meanlog.x, sdlog = sdlog.x)$statistic)
     for (i in 1:nreps) {
-      x.sim <- rlnorm(n, meanlog=meanlog.x, sdlog=sdlog.x)
-      D.sim[i] <- as.vector(ks.test(x.sim, "plnorm", meanlog=mean(log(x.sim)), sdlog=sd(log(x.sim)))$statistic)
+      x.sim <- rlnorm(n, meanlog = meanlog.x, sdlog = sdlog.x)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "plnorm", meanlog = mean(log(x.sim)),
+                          sdlog = sd(log(x.sim)))$statistic)
     }
   }
-  if(cdf=="punif") {
+  if (cdf == "punif") {
     min.x <- min(x)
     max.x <- max(x)
-    D.obs <- as.vector(ks.test(x, "punif", min=min.x, max=max.x)$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "punif", min = min.x, max = max.x)$statistic)
     for (i in 1:nreps) {
-      x.sim <- runif(n, min=min.x, max=max.x)
-      D.sim[i] <- as.vector(ks.test(x.sim, "punif", min=min(x.sim), max=max(x.sim))$statistic)
+      x.sim <- runif(n, min = min.x, max = max.x)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "punif", min = min(x.sim),
+                          max = max(x.sim))$statistic)
     }
   }
-  if(cdf=="plunif") {
+  if (cdf == "plunif") {
     if (any(x <= 0))
       stop("'x' values must be > 0 for loguniform distributions.")
     min.x <- min(x)
     max.x <- max(x)
-    D.obs <- as.vector(ks.test(x, "plunif", min=min.x, max=max.x)$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "plunif", min = min.x, max = max.x)$statistic)
     for (i in 1:nreps) {
-      x.sim <- rlunif(n, min=min.x, max=max.x)
-      D.sim[i] <- as.vector(ks.test(x.sim, "plunif", min=min(x.sim), max=max(x.sim))$statistic)
+      x.sim <- rlunif(n, min = min.x, max = max.x)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "plunif", min = min(x.sim),
+                          max = max(x.sim))$statistic)
     }
   }
-  if(cdf=="pmixnorm") {
-    G <- as.vector(G, mode="numeric")
-    m <- mclust::mclustBIC(x, G=G)
+  if (cdf == "pmixnorm") {
+    G <- as.vector(G, mode = "numeric")
+    m <- mclust::mclustBIC(x, G = G)
     m <- mclust::pickBIC(m, k = sum(!is.na(m)))
     listofmod <- strsplit(names(m), ",")
-    for(lom in 1:length(listofmod)) {
-      mixnorm <- mclust::Mclust(x, G=listofmod[[lom]][2], modelNames=listofmod[[lom]][1], control=emControl(eps=1e-320))
-      if(!all(is.na(mixnorm$parameters$pro))) break()
+    for (lom in 1:length(listofmod)) {
+      mixnorm <-
+        mclust::Mclust(x, G = listofmod[[lom]][2],
+          modelNames = listofmod[[lom]][1],
+          control = emControl(eps = 1e-320))
+      if (!all(is.na(mixnorm$parameters$pro)))
+        break()
     }
-    parameters <- mclust::Mclust(x, G=G)$parameters
+    parameters <- mclust::Mclust(x, G = G)$parameters
     modelName <- parameters$variance$modelName
     mean.x <- parameters$mean
     sd.x <- sqrt(parameters$variance$sigmasq)
     pro.x <- parameters$pro
-    D.obs <- as.vector(ks.test(x, "pmixnorm", mean=mean.x, sd=sd.x, pro=pro.x)$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "pmixnorm", mean = mean.x, sd = sd.x,
+                        pro = pro.x)$statistic)
     if (parameters$variance$G == 1)
       warning("Optimal mixture model for supplied sample has a single component: it is not a mixture model. Use 'pnorm' or 'plnorm' instead.")
     i <- 0
-    while(i < nreps) {
-      x.sim <- rmixnorm(n, mean=mean.x, pro=pro.x, sd=sd.x)
-      attempt <- try(mclust::Mclust(x.sim, G=G)$parameters, silent=TRUE)
-      if(inherits(attempt, "try-error")) { next }
+    while (i < nreps) {
+      x.sim <- rmixnorm(n, mean = mean.x, pro = pro.x, sd = sd.x)
+      attempt <-
+        try(mclust::Mclust(x.sim, G = G)$parameters, silent = TRUE)
+      if (inherits(attempt, "try-error")) {
+        next
+      }
       param.sim <- attempt
       i <- i + 1
       mean.sim <- param.sim$mean
       sd.sim <- sqrt(param.sim$variance$sigmasq)
       pro.sim <- param.sim$pro
-      D.sim[i] <- as.vector(ks.test(x.sim, "pmixnorm", mean=mean.sim, sd=sd.sim, pro=pro.sim)$statistic)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "pmixnorm", mean = mean.sim, sd = sd.sim,
+                          pro = pro.sim)$statistic)
     }
   }
-  if(cdf=="pexp") {
+  if (cdf == "pexp") {
     if (any(x <= 0))
       stop("'x' values must be > 0 for exponential distributions.")
     rate.x <- 1 / mean(x)
-    D.obs <- as.vector(ks.test(x, "pexp", rate=rate.x)$statistic)
+    D.obs <- as.vector(ks.test(x, "pexp", rate = rate.x)$statistic)
     for (i in 1:nreps) {
-      x.sim <- rexp(n, rate=rate.x)
-      D.sim[i] <- as.vector(ks.test(x.sim, "pexp", rate=(1/mean(x.sim)))$statistic)
+      x.sim <- rexp(n, rate = rate.x)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "pexp", rate = (1 / mean(x.sim)))$statistic)
     }
   }
-  if(cdf=="pgamma") {
+  if (cdf == "pgamma") {
     if (any(x <= 0))
       stop("'x' values must be > 0 for gamma distributions.")
-    shape.x <- mean(x)^2 / var(x)
+    shape.x <- mean(x) ^ 2 / var(x)
     scale.x <- var(x) / mean(x)
     # Re-scale in case the scale is much larger than 1:
-    param <- as.vector(suppressWarnings(MASS::fitdistr(x/scale.x, densfun="gamma", start=list(shape=shape.x, scale=scale.x/scale.x), control=list(maxit=25000))$estimate))
+    param <-
+      as.vector(suppressWarnings(
+        MASS::fitdistr(
+          x / scale.x,
+          densfun = "gamma",
+          start = list(shape = shape.x, scale = scale.x / scale.x),
+          control = list(maxit = 25000)
+        )$estimate
+      ))
     param[2] <- param[2] * scale.x	# Re-scale back
-    D.obs <- as.vector(ks.test(x, "pgamma", shape=param[1], scale=param[2])$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "pgamma", shape = param[1], scale = param[2])$statistic)
     for (i in 1:nreps) {
-      x.sim <- rgamma(n, shape=param[1], scale=param[2])
-      shape.sim <- mean(x.sim)^2 / var(x.sim)
+      x.sim <- rgamma(n, shape = param[1], scale = param[2])
+      shape.sim <- mean(x.sim) ^ 2 / var(x.sim)
       scale.sim <- var(x.sim) / mean(x.sim)
-      param.sim <- as.vector(suppressWarnings(MASS::fitdistr(x.sim/scale.sim, densfun="gamma", start=list(shape=shape.sim, scale=scale.sim/scale.sim), control=list(maxit=25000))$estimate))
+      param.sim <-
+        as.vector(suppressWarnings(
+          MASS::fitdistr(
+            x.sim / scale.sim,
+            densfun = "gamma",
+            start = list(shape = shape.sim, scale = scale.sim / scale.sim),
+            control = list(maxit = 25000)
+          )$estimate
+        ))
       param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
-      D.sim[i] <- as.vector(ks.test(x.sim, "pgamma", shape=param.sim[1], scale=param.sim[2])$statistic)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "pgamma", shape = param.sim[1], scale = param.sim[2])$statistic)
     }
   }
-  if(cdf=="pweibull") {
+  if (cdf == "pweibull") {
     if (any(x <= 0))
       stop("'x' values must be > 0 for Weibull distributions.")
     shape.x <- 1.2 / sd(log(x))
-    scale.x <- exp(mean(log(x)) + 0.572/shape.x)
+    scale.x <- exp(mean(log(x)) + 0.572 / shape.x)
     # Re-scale in case the scale is much larger than 1:
-    param <- as.vector(suppressWarnings(fitdistr(x/scale.x, densfun="weibull", start=list(shape=shape.x, scale=scale.x/scale.x), control=list(maxit=25000))$estimate))
+    param <-
+      as.vector(suppressWarnings(
+        fitdistr(
+          x / scale.x,
+          densfun = "weibull",
+          start = list(shape = shape.x, scale = scale.x / scale.x),
+          control = list(maxit = 25000)
+        )$estimate
+      ))
     param[2] <- param[2] * scale.x	# Re-scale back
-    D.obs <- as.vector(ks.test(x, "pweibull", shape=param[1], scale=param[2])$statistic)
+    D.obs <-
+      as.vector(ks.test(x, "pweibull", shape = param[1], scale = param[2])$statistic)
     for (i in 1:nreps) {
-      x.sim <- rweibull(n, shape=param[1], scale=param[2])
+      x.sim <- rweibull(n, shape = param[1], scale = param[2])
       shape.sim <- 1.2 / sd(log(x.sim))
-      scale.sim <- exp(mean(log(x.sim)) + 0.572/shape.sim)
-      param.sim <- as.vector(suppressWarnings(fitdistr(x.sim/scale.sim, densfun="weibull", start=list(shape=shape.sim, scale=scale.sim/scale.sim), control=list(maxit=25000))$estimate))
+      scale.sim <- exp(mean(log(x.sim)) + 0.572 / shape.sim)
+      param.sim <-
+        as.vector(suppressWarnings(
+          fitdistr(
+            x.sim / scale.sim,
+            densfun = "weibull",
+            start = list(shape = shape.sim, scale = scale.sim / scale.sim),
+            control = list(maxit = 25000)
+          )$estimate
+        ))
       param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
-      D.sim[i] <- as.vector(ks.test(x.sim, "pweibull", shape=param.sim[1], scale=param.sim[2])$statistic)
+      D.sim[i] <-
+        as.vector(ks.test(x.sim, "pweibull", shape = param.sim[1], scale = param.sim[2])$statistic)
     }
   }
   p.value <- (sum(D.sim > D.obs) + 1) / (nreps + 1)
-  out <- list(D.obs=D.obs, D.sim=D.sim, p.value=p.value)
+  out <- list(D.obs = D.obs, D.sim = D.sim, p.value = p.value)
   return(out)
-  }
+}
