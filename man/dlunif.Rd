@@ -68,10 +68,9 @@ hist(log(rlunif(10000, exp(1), exp(10))), main="random loguniform sample")
 hist(log(rlunif(10000, exp(1), exp(10), base=10), base=10), main="random loguniform sample")
 
 }
-\author{
-Steve Wang \email{scwang@swarthmore.edu}
-}
 \seealso{
 \code{\link[stats]{Distributions}} for other standard distributions
 }
-
+\author{
+Steve Wang \email{scwang@swarthmore.edu}
+}

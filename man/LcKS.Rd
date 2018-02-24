@@ -190,10 +190,6 @@ Lc$p.value
 }
 
 }
-\author{
-Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu}, based on
-  code from Charles Geyer (University of Minnesota).
-}
 \references{
 Gihman, I. I. 1952.  Ob empiriceskoj funkcii raspredelenija
   slucaje grouppirovki dannych [On the empirical distribution function in the
@@ -222,4 +218,7 @@ Parsons, F. G., and P. H. Wirsching. 1982. A Kolmogorov-Smirnov
   distribution function, and \code{\link{pmixnorm}} for the univariate normal
   mixture cumulative distribution function.
 }
-
+\author{
+Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu}, based on
+  code from Charles Geyer (University of Minnesota).
+}

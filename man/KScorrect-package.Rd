@@ -2,8 +2,8 @@
 % Please edit documentation in R/KScorrect.R
 \docType{package}
 \name{KScorrect-package}
-\alias{KScorrect}
 \alias{KScorrect-package}
+\alias{KScorrect}
 \title{KScorrect: Lilliefors-Corrected Kolmogorov-Smirnov Goodness-of-Fit Tests}
 \description{
 Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use in
@@ -47,4 +47,3 @@ Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu}
 
 Steve C. Wang \email{scwang@swarthmore.edu}
 }
-
