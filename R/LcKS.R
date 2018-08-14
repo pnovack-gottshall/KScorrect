@@ -112,7 +112,7 @@
 #'   population parameters, and to use this null distribution as the basis for
 #'   critical values. The function \code{LcKS} generalizes this solution for a
 #'   range of continuous distributions.
-
+#'
 #' @author Phil Novack-Gottshall \email{pnovack-gottshall@@ben.edu}, based on
 #'   code from Charles Geyer (University of Minnesota).
 #'
@@ -291,18 +291,18 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
   }
   if (cdf == "pmixnorm") {
     G <- as.vector(G, mode = "numeric")
-    m <- mclust::mclustBIC(x, G = G)
+    m <- mclust::mclustBIC(x, G = G, verbose = FALSE)
     m <- mclust::pickBIC(m, k = sum(!is.na(m)))
     listofmod <- strsplit(names(m), ",")
     for (lom in 1:length(listofmod)) {
       mixnorm <-
         mclust::Mclust(x, G = listofmod[[lom]][2],
           modelNames = listofmod[[lom]][1],
-          control = emControl(eps = 1e-320))
+          control = emControl(eps = 1e-320), verbose = FALSE)
       if (!all(is.na(mixnorm$parameters$pro)))
         break()
     }
-    parameters <- mclust::Mclust(x, G = G)$parameters
+    parameters <- mclust::Mclust(x, G = G, verbose = FALSE)$parameters
     modelName <- parameters$variance$modelName
     mean.x <- parameters$mean
     sd.x <- sqrt(parameters$variance$sigmasq)
@@ -316,7 +316,7 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
     while (i < nreps) {
       x.sim <- rmixnorm(n, mean = mean.x, pro = pro.x, sd = sd.x)
       attempt <-
-        try(mclust::Mclust(x.sim, G = G)$parameters, silent = TRUE)
+        try(mclust::Mclust(x.sim, G = G, verbose = FALSE)$parameters, silent = TRUE)
       if (inherits(attempt, "try-error")) {
         next
       }

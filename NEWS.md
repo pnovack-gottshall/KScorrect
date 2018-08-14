@@ -1,3 +1,6 @@
+# KScorrect 1.2.4 (2018-08-14)
+* Silenced 'verbose' arg when calling 'mclust' functions
+
 # KScorrect 1.2.3 (2018-02-23)
 * Reformatted functions to Google / Hadley style
 
