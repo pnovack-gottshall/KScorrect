@@ -1,3 +1,6 @@
+# KScorrect 1.2.5 (2018-09-17)
+* Changed number of randomly generated samples per mixture components ('nr') to 1000, to match help file text. nr=1000 is much faster and nearly equally precise.
+
 # KScorrect 1.2.4 (2018-08-14)
 * Silenced 'verbose' arg when calling 'mclust' functions
 

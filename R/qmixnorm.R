@@ -26,7 +26,7 @@ qmixnorm <- function (p, mean, sd, pro, expand=1) {
     stop("the lengths of supplied parameters do not make sense.")
   pro <- as.vector(pro, mode = "numeric")
   pro <- pro / sum(pro)
-  nr <- 10000
+  nr <- 1000
   x <- rmixnorm(nr * G, mean = mean, sd = sd, pro = pro)
   if (mode(expand) != "numeric" | expand < 0L)
     stop("'expand' must be a non-negative number.")
