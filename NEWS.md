@@ -1,3 +1,6 @@
+# KScorrect 1.3.1 (2019-01-05)
+* Changed spline method from default to 'hyman' in qmixnorm that is more appropriate for handling monotonic sequences, and improves performance under certain mixture models. (Thanks to Qiong Zhang for catching the error.)
+
 # KScorrect 1.2.5 (2018-09-17)
 * Changed number of randomly generated samples per mixture components ('nr') to 1000, to match help file text. nr=1000 is much faster and nearly equally precise.
 
