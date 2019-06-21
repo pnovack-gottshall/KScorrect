@@ -3,9 +3,7 @@
 KScorrect implements the Lilliefors-corrected Kolmogorov-Smirnov test for use 
 in goodness-of-fit tests, suitable when population parameters are unknown and 
 must be estimated by sample statistics. P-values are estimated by simulation.
-Coded to complement stats::ks.test, it can be used with a variety of continuous
-distributions, including normal, lognormal, mixture of normals, uniform,
-loguniform, exponential, gamma, and Weibull distributions.
+Coded to complement stats::ks.test, it can be used with a variety of continuous distributions, including normal, lognormal, mixture of normals, uniform, loguniform, exponential, gamma, and Weibull distributions.
 
 Functions are also provided to generate random numbers and calculate density, 
 distribution, and quantile functions for the loguniform and normal mixture 

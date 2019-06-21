@@ -3,6 +3,7 @@
 export(LcKS)
 export(dlunif)
 export(dmixnorm)
+export(ks_test_stat)
 export(plunif)
 export(pmixnorm)
 export(qlunif)
