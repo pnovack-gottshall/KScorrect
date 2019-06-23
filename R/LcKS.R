@@ -3,10 +3,11 @@
 #' Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use in
 #' goodness-of-fit tests, suitable when population parameters are unknown and
 #' must be estimated by sample statistics. It uses Monte Carlo simulation to
-#' estimate \emph{p}-values. Coded to wrap around \code{\link[stats]{ks.test}},
-#' it can be used with a variety of continuous distributions, including normal,
-#' lognormal, univariate mixtures of normals, uniform, loguniform, exponential,
-#' gamma, and Weibull distributions.
+#' estimate \emph{p}-values. Using a modification of
+#' \code{\link[stats]{ks.test}}, it can be used with a variety of continuous
+#' distributions, including normal, lognormal, univariate mixtures of normals,
+#' uniform, loguniform, exponential, gamma, and Weibull distributions. The Monte
+#' Carlo algorithm can run 'in parallel.'
 #'
 #' @param x A numeric vector of data values (observed sample).
 #' @param cdf Character string naming a cumulative distribution function. Case
@@ -23,7 +24,14 @@
 #' @param G Numeric vector of mixture components to consider, for mixture models
 #'   only. \code{Default = 1:9} fits up to 9 components. Must contain positive
 #'   integers. See \code{details} below.
-#'
+#' @param varModel For mixture models, character string determining whether to
+#'   allow equal-variance mixture components (\code{E}), variable-variance
+#'   mixture components (\code{V}) or both (the \code{default}).
+#' @param parallel Logical value that switches between running Monte Carlo
+#'   algorithm in parallel (if \code{TRUE}) or not (if \code{FALSE}, the
+#'   \code{default}).
+#' @param cores Numeric value to control how many cores to build when running in
+#'   parallel. \code{Default = \link[parallel]{detectCores} - 1}.
 #'
 #' @details The function builds a simulation distribution \code{D.sim} of length
 #'   \code{nreps} by drawing random samples from the specified continuous
@@ -31,8 +39,8 @@
 #'   provided sample \code{x}. Observed statistic \emph{\code{D}} and simulated
 #'   test statistics are calculated using \code{\link[stats]{ks.test}}.
 #'
-#'   The default \code{nreps=4999} provides accurate \emph{p}-values.
-#'   \code{nreps=1999} is sufficient for most cases, and computationally faster
+#'   The default \code{nreps = 4999} provides accurate \emph{p}-values.
+#'   \code{nreps = 1999} is sufficient for most cases, and computationally faster
 #'   when dealing with more complicated distributions (such as univariate normal
 #'   mixtures, gamma, and Weibull).
 #'
@@ -42,7 +50,7 @@
 #'   Carlo samples. A value of 1 is added to both the numerator and denominator
 #'   to allow the observed sample to be represented within the null distribution
 #'   (Manly 2004); this has the benefit of avoiding nonsensical
-#'   \code{p.value=0.000} and accounts for the fact that the \emph{p}-value is
+#'   \code{p.value = 0.000} and accounts for the fact that the \emph{p}-value is
 #'   an estimate.
 #'
 #'   Parameter estimates are calculated for the specified continuous
@@ -72,13 +80,13 @@
 #'   components.
 #'
 #'   Be aware that constraining \code{G} changes the null hypothesis. The
-#'   default (\code{G=1:9}) null hypothesis is that a sample was drawn from
-#'   \emph{any \code{G=1:9}-component mixture distribution}. Specifying a
-#'   particular value, such as \code{G=2}, restricts the null hypothesis to
+#'   default (\code{G = 1:9}) null hypothesis is that a sample was drawn from
+#'   \emph{any \code{G = 1:9}-component mixture distribution}. Specifying a
+#'   particular value, such as \code{G = 2}, restricts the null hypothesis to
 #'   particular mixture distributions with just \code{G} components, even if
 #'   simulated samples might better be represented as different mixture models.
 #'
-#'   The \code{LcKS(cdf="pmixnorm")} test implements two control loops to avoid
+#'   The \code{LcKS(cdf = "pmixnorm")} test implements two control loops to avoid
 #'   errors caused by this constraint and when working with problematic samples.
 #'   The first loop occurs during model-selection for the observed sample
 #'   \code{x}, and allows for estimation of parameters for the second-best model
@@ -94,7 +102,7 @@
 #'
 #'   \item{D.obs}{The value of the test statistic \emph{D} for the observed
 #'   sample.} \item{D.sim}{Simulation distribution of test statistics, with
-#'   \code{length=nreps}. This can be used to calculate critical values; see
+#'   \code{length = nreps}. This can be used to calculate critical values; see
 #'   examples.} \item{p.value}{\emph{p}-value of the test, calculated as
 #'   \eqn{(\sum(D.sim > D.obs) + 1) / (nreps + 1)}.}
 #'
@@ -140,10 +148,10 @@
 #'
 #' @examples
 #' x <- runif(200)
-#' Lc <- LcKS(x, cdf="pnorm", nreps=999)
+#' Lc <- LcKS(x, cdf = "pnorm", nreps = 999)
 #' hist(Lc$D.sim)
 #' abline(v = Lc$D.obs, lty = 2)
-#' print(Lc, max=50)  # Print first 50 simulated statistics
+#' print(Lc, max = 50)  # Print first 50 simulated statistics
 #' # Approximate p-value (usually) << 0.05
 #'
 #' # Confirmation uncorrected version has increased Type II error rate when
@@ -153,21 +161,21 @@
 #' # Confirm critical values for normal distribution are correct
 #' nreps <- 9999
 #' x <- rnorm(25)
-#' Lc <- LcKS(x, "pnorm", nreps=nreps)
+#' Lc <- LcKS(x, "pnorm", nreps = nreps)
 #' sim.Ds <- sort(Lc$D.sim)
 #' crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 #' # Lilliefors' (1967) critical values, using improved values from
-#' #   Parsons & Wirsching (1982) (for n=25):
+#' #   Parsons & Wirsching (1982) (for n = 25):
 #' # 0.141 0.148 0.157 0.172 0.201
 #' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
 #' # Confirm critical values for exponential are the same as reported by Lilliefors (1969)
 #' nreps <- 9999
 #' x <- rexp(25)
-#' Lc <- LcKS(x, "pexp", nreps=nreps)
+#' Lc <- LcKS(x, "pexp", nreps = nreps)
 #' sim.Ds <- sort(Lc$D.sim)
 #' crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
-#' # Lilliefors' (1969) critical values (for n=25):
+#' # Lilliefors' (1969) critical values (for n = 25):
 #' # 0.170 0.180 0.191 0.210 0.247
 #' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
@@ -175,28 +183,28 @@
 #' # Gamma and Weibull tests require functions from the 'MASS' package
 #' # Takes time for maximum likelihood optimization of statistics
 #' require(MASS)
-#' x <- runif(100, min=1, max=100)
-#' Lc <- LcKS(x, cdf="pgamma", nreps=499)
+#' x <- runif(100, min = 1, max = 100)
+#' Lc <- LcKS(x, cdf = "pgamma", nreps = 499)
 #' Lc$p.value
 #'
 #' # Confirm critical values for Weibull the same as reported by Parsons & Wirsching (1982)
 #' nreps <- 9999
-#' x <- rweibull(25, shape=1, scale=1)
-#' Lc <- LcKS(x, "pweibull", nreps=nreps)
+#' x <- rweibull(25, shape = 1, scale = 1)
+#' Lc <- LcKS(x, "pweibull", nreps = nreps)
 #' sim.Ds <- sort(Lc$D.sim)
 #' crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
-#' # Parsons & Wirsching (1982) critical values (for n=25):
+#' # Parsons & Wirsching (1982) critical values (for n = 25):
 #' # 0.141 0.148 0.157 0.172 0.201
 #' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
 #' # Mixture test requires functions from the 'mclust' package
 #' # Takes time to identify model parameters
 #' require(mclust)
-#' x <- rmixnorm(200, mean=c(10, 20), sd=2, pro=c(1,3))
-#' Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=1:9)   # Default G (1:9) takes long time
+#' x <- rmixnorm(200, mean = c(10, 20), sd = 2, pro = c(1,3))
+#' Lc <- LcKS(x, cdf = "pmixnorm", nreps = 499, G = 1:9)   # Default G (1:9) takes long time
 #' Lc$p.value
 #' G <- Mclust(x)$parameters$variance$G              # Optimal model has only two components
-#' Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=G)     # Restricting to likely G saves time
+#' Lc <- LcKS(x, cdf = "pmixnorm", nreps = 499, G = G)     # Restricting to likely G saves time
 #' # But note changes null hypothesis: now testing against just two-component mixture
 #' Lc$p.value
 #' }
@@ -204,6 +212,8 @@
 #' @export
 #' @import mclust
 #' @import MASS
+#' @import doParallel
+#' @import parallel
 #' @importFrom stats sd
 #' @importFrom stats var
 #' @importFrom stats cor
@@ -214,8 +224,9 @@
 #' @importFrom stats rweibull
 #' @importFrom stats rexp
 #' @importFrom stats rgamma
-#' @importFrom stats ks.test
-LcKS <- function(x, cdf, nreps=4999, G=1:9) {
+LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"),
+                 parallel = FALSE, cores = NULL) {
+  # Basic troubleshooting:
   if (missing(x) || length(x) == 0L || mode(x) != "numeric")
     stop("'x' must be a non-empty numeric vector")
   if (any(!is.finite(x)))
@@ -229,69 +240,128 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
                "pgamma", "pweibull")
   if (!(cdf %in% allowed))
     stop("'cdf' is not a supported distribution function.")
+  if (cdf == "plnorm" | cdf == "plunif" | cdf == "pexp" |
+      cdf == "pgamma" | cdf == "pweibull") {
+    if (any(x <= 0))
+      stop("'x' values must be > 0 for your 'cdf' distribution.")
+  }
   if (length(G) == 1L && G == 1 && cdf == "pmixnorm")
     stop("'G' supplied not consistent with mixture model. Use 'pnorm' or 'plnorm' instead.")
   if (!identical(G, 1:9) && cdf != "pmixnorm")
     warning("'G' is ignored except when cdf='pmixnorm'.")
   if (any(G < 1))
     stop("'G' must be a positive integer or vector of positive integers.")
+  if (!parallel & !is.null(cores))
+    stop("You specified to use multiple 'cores' but not to run in parallel. Set parallel = TRUE to run in parallel.")
+  if (parallel & !is.null(cores)) {
+    if (is.numeric(cores)) {
+      if (cores < 2L | cores < 0)
+        stop("Set 'cores' to integer greater than 1 to run in parallel.")
+      if (!abs(cores - round(cores)) < .Machine$double.eps ^ 0.5)
+        stop("Set 'cores' to integer greater than 1 to run in parallel.")
+      if (cores > parallel::detectCores())
+        warning("You are attempting to run this function on more cores than your computer contains. Consider reducing 'cores' to improve efficiency.")
+    } else {
+      stop("Set 'cores' to integer greater than 1 to run in parallel.")
+    }
+  }
+  if (!parallel & cdf %in% c("pgamma", "pweibull", "pmixnorm"))
+    warning("Consider setting 'parallel = TRUE' to increase the speed of this function.")
+  if (parallel & !cdf %in% c("pgamma", "pweibull", "pmixnorm"))
+    warning("Consider setting 'parallel = FALSE' to increase the speed of this function.")
+  # Set up parallel infrastructure:
+  if (parallel) {
+    if (is.null(cores))
+      cores <- parallel::detectCores() - 1
+    cl <- parallel::makeCluster(cores)
+    doParallel::registerDoParallel(cl)
+    if (getDoParRegistered())
+      message(sprintf('LcKS is running in parallel with %d worker(s) using %s [%s]\n',
+                      getDoParWorkers(), getDoParName(), getDoParVersion()))
+  }
+  # Run Monte Carlo algorithm:
   n <- length(x)
   D.sim <- rep(NA, nreps)
   if (cdf == "pnorm") {
     mean.x <- mean(x)
     sd.x <- sd(x)
-    D.obs <-
-      as.vector(ks.test(x, "pnorm", mean = mean.x, sd = sd.x)$statistic)
-    for (i in 1:nreps) {
-      x.sim <- rnorm(n, mean = mean.x, sd = sd.x)
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "pnorm", mean = mean(x.sim),
-                          sd = sd(x.sim))$statistic)
+    D.obs <- ks_test_stat(x, "pnorm", mean = mean.x, sd = sd.x)
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect")) %dopar% {
+        x.sim <- rnorm(n, mean = mean.x, sd = sd.x)
+        ks_test_stat(x.sim, "pnorm", mean = mean(x.sim), sd = sd(x.sim))
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- rnorm(n, mean = mean.x, sd = sd.x)
+        D.sim[i] <- ks_test_stat(x.sim, "pnorm", mean = mean(x.sim),
+                               sd = sd(x.sim))
+      }
     }
   }
   if (cdf == "plnorm") {
-    if (any(x <= 0))
-      stop("'x' values must be > 0 for lognormal distributions.")
     meanlog.x <- mean(log(x))
     sdlog.x <- sd(log(x))
-    D.obs <-
-      as.vector(ks.test(x, "plnorm", meanlog = meanlog.x, sdlog = sdlog.x)$statistic)
-    for (i in 1:nreps) {
-      x.sim <- rlnorm(n, meanlog = meanlog.x, sdlog = sdlog.x)
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "plnorm", meanlog = mean(log(x.sim)),
-                          sdlog = sd(log(x.sim)))$statistic)
+    D.obs <- ks_test_stat(x, "plnorm", meanlog = meanlog.x,
+                            sdlog = sdlog.x)
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect")) %dopar% {
+        x.sim <- rlnorm(n, meanlog = meanlog.x, sdlog = sdlog.x)
+        ks_test_stat(x.sim, "plnorm", meanlog = mean(log(x.sim)),
+                       sdlog = sd(log(x.sim)))
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- rlnorm(n, meanlog = meanlog.x, sdlog = sdlog.x)
+        D.sim[i] <- ks_test_stat(x.sim, "plnorm",
+                                 meanlog = mean(log(x.sim)),
+                                 sdlog = sd(log(x.sim)))
+      }
     }
   }
   if (cdf == "punif") {
     min.x <- min(x)
     max.x <- max(x)
-    D.obs <-
-      as.vector(ks.test(x, "punif", min = min.x, max = max.x)$statistic)
-    for (i in 1:nreps) {
-      x.sim <- runif(n, min = min.x, max = max.x)
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "punif", min = min(x.sim),
-                          max = max(x.sim))$statistic)
+    D.obs <- ks_test_stat(x, "punif", min = min.x, max = max.x)
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect")) %dopar% {
+        x.sim <- runif(n, min = min.x, max = max.x)
+        ks_test_stat(x.sim, "punif", min = min(x.sim), max = max(x.sim))
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- runif(n, min = min.x, max = max.x)
+        D.sim[i] <- ks_test_stat(x.sim, "punif", min = min(x.sim),
+                                 max = max(x.sim))
+      }
     }
   }
   if (cdf == "plunif") {
-    if (any(x <= 0))
-      stop("'x' values must be > 0 for loguniform distributions.")
     min.x <- min(x)
     max.x <- max(x)
-    D.obs <-
-      as.vector(ks.test(x, "plunif", min = min.x, max = max.x)$statistic)
-    for (i in 1:nreps) {
-      x.sim <- rlunif(n, min = min.x, max = max.x)
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "plunif", min = min(x.sim),
-                          max = max(x.sim))$statistic)
+    D.obs <- ks_test_stat(x, "plunif", min = min.x, max = max.x)
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect")) %dopar% {
+        x.sim <- rlunif(n, min = min.x, max = max.x)
+        ks_test_stat(x.sim, "plunif", min = min(x.sim), max = max(x.sim))
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- rlunif(n, min = min.x, max = max.x)
+        D.sim[i] <- ks_test_stat(x.sim, "plunif", min = min(x.sim),
+                                 max = max(x.sim))
+      }
     }
   }
   if (cdf == "pmixnorm") {
     G <- as.vector(G, mode = "numeric")
-    m <- mclust::mclustBIC(x, G = G, verbose = FALSE)
+    varModel <- toupper(varModel)
+    m <- mclust::mclustBIC(x, G = G, modelNames = varModel,
+                           verbose = FALSE)
     m <- mclust::pickBIC(m, k = sum(!is.na(m)))
     listofmod <- strsplit(names(m), ",")
     for (lom in 1:length(listofmod)) {
@@ -302,48 +372,69 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
       if (!all(is.na(mixnorm$parameters$pro)))
         break()
     }
-    parameters <- mclust::Mclust(x, G = G, verbose = FALSE)$parameters
+    parameters <- mclust::Mclust(x, G = G, modelNames = varModel,
+                                 verbose = FALSE)$parameters
     modelName <- parameters$variance$modelName
     mean.x <- parameters$mean
     sd.x <- sqrt(parameters$variance$sigmasq)
     pro.x <- parameters$pro
-    D.obs <-
-      as.vector(ks.test(x, "pmixnorm", mean = mean.x, sd = sd.x,
-                        pro = pro.x)$statistic)
+    D.obs <- ks_test_stat(x, "pmixnorm", mean = mean.x, sd = sd.x,
+                        pro = pro.x)
     if (parameters$variance$G == 1)
       warning("Optimal mixture model for supplied sample has a single component: it is not a mixture model. Use 'pnorm' or 'plnorm' instead.")
-    i <- 0
-    while (i < nreps) {
-      x.sim <- rmixnorm(n, mean = mean.x, pro = pro.x, sd = sd.x)
-      attempt <-
-        try(mclust::Mclust(x.sim, G = G, verbose = FALSE)$parameters, silent = TRUE)
-      if (inherits(attempt, "try-error")) {
-        next
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect", "mclust")) %dopar% {
+        repeat {
+          x.sim <- rmixnorm(n, mean = mean.x, pro = pro.x, sd = sd.x)
+          attempt <- try(mclust::Mclust(x.sim, G = G, modelNames = varModel,
+                                        verbose = FALSE)$parameters, silent = TRUE)
+          if (!inherits(attempt, "try-error")) { break }
+        }
+        param.sim <- attempt
+        mean.sim <- param.sim$mean
+        sd.sim <- sqrt(param.sim$variance$sigmasq)
+        pro.sim <- param.sim$pro
+        ks_test_stat(x.sim, "pmixnorm", mean = mean.sim, sd = sd.sim,
+                     pro = pro.sim)
       }
-      param.sim <- attempt
-      i <- i + 1
-      mean.sim <- param.sim$mean
-      sd.sim <- sqrt(param.sim$variance$sigmasq)
-      pro.sim <- param.sim$pro
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "pmixnorm", mean = mean.sim, sd = sd.sim,
-                          pro = pro.sim)$statistic)
+    } else {
+      i <- 0
+      while (i < nreps) {
+        x.sim <- rmixnorm(n, mean = mean.x, pro = pro.x, sd = sd.x)
+        attempt <- try(mclust::Mclust(x.sim, G = G, verbose = FALSE)$parameters,
+                       silent = TRUE)
+        if (inherits(attempt, "try-error")) {
+          next
+        }
+        param.sim <- attempt
+        i <- i + 1
+        mean.sim <- param.sim$mean
+        sd.sim <- sqrt(param.sim$variance$sigmasq)
+        pro.sim <- param.sim$pro
+        D.sim[i] <- ks_test_stat(x.sim, "pmixnorm", mean = mean.sim, sd = sd.sim,
+                                 pro = pro.sim)
+      }
     }
   }
   if (cdf == "pexp") {
-    if (any(x <= 0))
-      stop("'x' values must be > 0 for exponential distributions.")
     rate.x <- 1 / mean(x)
-    D.obs <- as.vector(ks.test(x, "pexp", rate = rate.x)$statistic)
-    for (i in 1:nreps) {
-      x.sim <- rexp(n, rate = rate.x)
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "pexp", rate = (1 / mean(x.sim)))$statistic)
+    D.obs <- ks_test_stat(x, "pexp", rate = rate.x)
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect")) %dopar% {
+        x.sim <- rexp(n, rate = rate.x)
+        ks_test_stat(x.sim, "pexp", rate = (1 / mean(x.sim)))
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- rexp(n, rate = rate.x)
+        D.sim[i] <- ks_test_stat(x.sim, "pexp",
+                                 rate = (1 / mean(x.sim)))
+      }
     }
   }
   if (cdf == "pgamma") {
-    if (any(x <= 0))
-      stop("'x' values must be > 0 for gamma distributions.")
     shape.x <- mean(x) ^ 2 / var(x)
     scale.x <- var(x) / mean(x)
     # Re-scale in case the scale is much larger than 1:
@@ -358,28 +449,46 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
       ))
     param[2] <- param[2] * scale.x	# Re-scale back
     D.obs <-
-      as.vector(ks.test(x, "pgamma", shape = param[1], scale = param[2])$statistic)
-    for (i in 1:nreps) {
-      x.sim <- rgamma(n, shape = param[1], scale = param[2])
-      shape.sim <- mean(x.sim) ^ 2 / var(x.sim)
-      scale.sim <- var(x.sim) / mean(x.sim)
-      param.sim <-
-        as.vector(suppressWarnings(
-          MASS::fitdistr(
-            x.sim / scale.sim,
-            densfun = "gamma",
-            start = list(shape = shape.sim, scale = scale.sim / scale.sim),
-            control = list(maxit = 25000)
-          )$estimate
-        ))
-      param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "pgamma", shape = param.sim[1], scale = param.sim[2])$statistic)
+      ks_test_stat(x, "pgamma", shape = param[1], scale = param[2])
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect", "MASS")) %dopar% {
+        x.sim <- rgamma(n, shape = param[1], scale = param[2])
+        shape.sim <- mean(x.sim) ^ 2 / var(x.sim)
+        scale.sim <- var(x.sim) / mean(x.sim)
+        param.sim <-
+          as.vector(suppressWarnings(
+            MASS::fitdistr(
+              x.sim / scale.sim,
+              densfun = "gamma",
+              start = list(shape = shape.sim, scale = scale.sim / scale.sim),
+              control = list(maxit = 25000)
+            )$estimate
+          ))
+        param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
+        ks_test_stat(x.sim, "pgamma", shape = param.sim[1], scale = param.sim[2])
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- rgamma(n, shape = param[1], scale = param[2])
+        shape.sim <- mean(x.sim) ^ 2 / var(x.sim)
+        scale.sim <- var(x.sim) / mean(x.sim)
+        param.sim <-
+          as.vector(suppressWarnings(
+            MASS::fitdistr(
+              x.sim / scale.sim,
+              densfun = "gamma",
+              start = list(shape = shape.sim, scale = scale.sim / scale.sim),
+              control = list(maxit = 25000)
+            )$estimate
+          ))
+        param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
+        D.sim[i] <-
+          ks_test_stat(x.sim, "pgamma", shape = param.sim[1], scale = param.sim[2])
+      }
     }
   }
   if (cdf == "pweibull") {
-    if (any(x <= 0))
-      stop("'x' values must be > 0 for Weibull distributions.")
     shape.x <- 1.2 / sd(log(x))
     scale.x <- exp(mean(log(x)) + 0.572 / shape.x)
     # Re-scale in case the scale is much larger than 1:
@@ -394,26 +503,48 @@ LcKS <- function(x, cdf, nreps=4999, G=1:9) {
       ))
     param[2] <- param[2] * scale.x	# Re-scale back
     D.obs <-
-      as.vector(ks.test(x, "pweibull", shape = param[1], scale = param[2])$statistic)
-    for (i in 1:nreps) {
-      x.sim <- rweibull(n, shape = param[1], scale = param[2])
-      shape.sim <- 1.2 / sd(log(x.sim))
-      scale.sim <- exp(mean(log(x.sim)) + 0.572 / shape.sim)
-      param.sim <-
-        as.vector(suppressWarnings(
-          fitdistr(
-            x.sim / scale.sim,
-            densfun = "weibull",
-            start = list(shape = shape.sim, scale = scale.sim / scale.sim),
-            control = list(maxit = 25000)
-          )$estimate
-        ))
-      param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
-      D.sim[i] <-
-        as.vector(ks.test(x.sim, "pweibull", shape = param.sim[1], scale = param.sim[2])$statistic)
+      ks_test_stat(x, "pweibull", shape = param[1], scale = param[2])
+    if (parallel) {
+      D.sim <- foreach(icount(nreps), .combine = c, .inorder = FALSE,
+                       .packages = c("KScorrect", "MASS")) %dopar% {
+        x.sim <- rweibull(n, shape = param[1], scale = param[2])
+        shape.sim <- 1.2 / sd(log(x.sim))
+        scale.sim <- exp(mean(log(x.sim)) + 0.572 / shape.sim)
+        param.sim <-
+          as.vector(suppressWarnings(
+            MASS::fitdistr(
+              x.sim / scale.sim,
+              densfun = "weibull",
+              start = list(shape = shape.sim, scale = scale.sim / scale.sim),
+              control = list(maxit = 25000)
+            )$estimate
+          ))
+        param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
+        ks_test_stat(x.sim, "pweibull", shape = param.sim[1],
+                     scale = param.sim[2])
+      }
+    } else {
+      for (i in 1:nreps) {
+        x.sim <- rweibull(n, shape = param[1], scale = param[2])
+        shape.sim <- 1.2 / sd(log(x.sim))
+        scale.sim <- exp(mean(log(x.sim)) + 0.572 / shape.sim)
+        param.sim <-
+          as.vector(suppressWarnings(
+            fitdistr(
+              x.sim / scale.sim,
+              densfun = "weibull",
+              start = list(shape = shape.sim, scale = scale.sim / scale.sim),
+              control = list(maxit = 25000)
+            )$estimate
+          ))
+        param.sim[2] <- param.sim[2] * scale.sim	# Re-scale back
+        D.sim[i] <-
+          ks_test_stat(x.sim, "pweibull", shape = param.sim[1], scale = param.sim[2])
+      }
     }
   }
   p.value <- (sum(D.sim > D.obs) + 1) / (nreps + 1)
   out <- list(D.obs = D.obs, D.sim = D.sim, p.value = p.value)
+  if (parallel) parallel::stopCluster(cl)
   return(out)
 }

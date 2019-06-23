@@ -4,7 +4,8 @@
 \alias{LcKS}
 \title{Lilliefors-corrected Kolmogorov-Smirnov Goodness-Of-Fit Test}
 \usage{
-LcKS(x, cdf, nreps = 4999, G = 1:9)
+LcKS(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"),
+  parallel = FALSE, cores = NULL)
 }
 \arguments{
 \item{x}{A numeric vector of data values (observed sample).}
@@ -25,6 +26,17 @@ positive integer.}
 \item{G}{Numeric vector of mixture components to consider, for mixture models
 only. \code{Default = 1:9} fits up to 9 components. Must contain positive
 integers. See \code{details} below.}
+
+\item{varModel}{For mixture models, character string determining whether to
+allow equal-variance mixture components (\code{E}), variable-variance
+mixture components (\code{V}) or both (the \code{default}).}
+
+\item{parallel}{Logical value that switches between running Monte Carlo
+algorithm in parallel (if \code{TRUE}) or not (if \code{FALSE}, the
+\code{default}).}
+
+\item{cores}{Numeric value to control how many cores to build when running in
+parallel. \code{Default = \link[parallel]{detectCores} - 1}.}
 }
 \value{
 A list containing the following components:
@@ -39,10 +51,11 @@ A list containing the following components:
 Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use in
 goodness-of-fit tests, suitable when population parameters are unknown and
 must be estimated by sample statistics. It uses Monte Carlo simulation to
-estimate \emph{p}-values. Coded to wrap around \code{\link[stats]{ks.test}},
-it can be used with a variety of continuous distributions, including normal,
-lognormal, univariate mixtures of normals, uniform, loguniform, exponential,
-gamma, and Weibull distributions.
+estimate \emph{p}-values. Using a modification of
+\code{\link[stats]{ks.test}}, it can be used with a variety of continuous
+distributions, including normal, lognormal, univariate mixtures of normals,
+uniform, loguniform, exponential, gamma, and Weibull distributions. The Monte
+Carlo algorithm can run 'in parallel.'
 }
 \details{
 The function builds a simulation distribution \code{D.sim} of length
