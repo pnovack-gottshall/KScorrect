@@ -40,18 +40,17 @@
 #'   test statistics are calculated using \code{\link[stats]{ks.test}}.
 #'
 #'   The default \code{nreps = 4999} provides accurate \emph{p}-values.
-#'   \code{nreps = 1999} is sufficient for most cases, and computationally faster
-#'   when dealing with more complicated distributions (such as univariate normal
-#'   mixtures, gamma, and Weibull).
+#'   \code{nreps = 1999} is sufficient for most cases, and computationally
+#'   faster when dealing with more complicated distributions (such as univariate
+#'   normal mixtures, gamma, and Weibull).
 #'
 #'   The \emph{p}-value is calculated as the number of Monte Carlo samples with
 #'   test statistics \emph{D} as extreme as or more extreme than that in the
 #'   observed sample \code{D.obs}, divided by the \code{nreps} number of Monte
 #'   Carlo samples. A value of 1 is added to both the numerator and denominator
 #'   to allow the observed sample to be represented within the null distribution
-#'   (Manly 2004); this has the benefit of avoiding nonsensical
-#'   \code{p.value = 0.000} and accounts for the fact that the \emph{p}-value is
-#'   an estimate.
+#'   (Manly 2004); this has the benefit of avoiding nonsensical \code{p.value =
+#'   0.000} and accounts for the fact that the \emph{p}-value is an estimate.
 #'
 #'   Parameter estimates are calculated for the specified continuous
 #'   distribution, using maximum-likelihood estimates. When testing against the
@@ -86,17 +85,27 @@
 #'   particular mixture distributions with just \code{G} components, even if
 #'   simulated samples might better be represented as different mixture models.
 #'
-#'   The \code{LcKS(cdf = "pmixnorm")} test implements two control loops to avoid
-#'   errors caused by this constraint and when working with problematic samples.
-#'   The first loop occurs during model-selection for the observed sample
-#'   \code{x}, and allows for estimation of parameters for the second-best model
-#'   when those for the optimal model are not able to be calculated by the EM
-#'   algorithm. A second loop occurs during the simulation algorithm, rejecting
-#'   samples that cannot be fit by the mixture model specified by the observed
-#'   sample \code{x}. Such problematic cases are most common when the observed
-#'   or simulated samples have a component(s) with very small variance (i.e.,
-#'   duplicate observations) or when a Monte Carlo sample cannot be fit by the
-#'   specified \code{G}.
+#'   The \code{LcKS(cdf = "pmixnorm")} test implements two control loops to
+#'   avoid errors caused by this constraint and when working with problematic
+#'   samples. The first loop occurs during model-selection for the observed
+#'   sample \code{x}, and allows for estimation of parameters for the
+#'   second-best model when those for the optimal model are not able to be
+#'   calculated by the EM algorithm. A second loop occurs during the simulation
+#'   algorithm, rejecting samples that cannot be fit by the mixture model
+#'   specified by the observed sample \code{x}. Such problematic cases are most
+#'   common when the observed or simulated samples have a component(s) with very
+#'   small variance (i.e., duplicate observations) or when a Monte Carlo sample
+#'   cannot be fit by the specified \code{G}.
+#'
+#'   Parellel computing can be implemented using \code{parallel = TRUE}, with
+#'   default \code{\link[parallel]{detectCores} - 1} number of cores. Parallel
+#'   computing is generally advisable for the more complicated cumulative
+#'   density functions (univariate normal mixture, gamma, Weibull), where
+#'   maximum likelihood estimation is time-intensive, but it generally not
+#'   advisable for density functions with quickly calculated sample statistics.
+#'   Warnings within the function provide sensible recommendations, but users
+#'   are encouraged to experiment to discover their fastest implementation for
+#'   their individual needs.
 #'
 #' @return A list containing the following components:
 #'
@@ -113,21 +122,17 @@
 #'   statistic; i.e., using the sample to estimate population parameters brings
 #'   the Kolmogorov-Smirnov test statistic \emph{D} closer to the null
 #'   distribution than it would be under the hypothesis where the population
-#'   parameters are known (Gihman 1952). In other words, it is biased and
-#'   results in increased Type II error rates. Lilliefors (1967, 1969) provided
-#'   a solution, using Monte Carlo simulation to approximate the shape of the
-#'   null distribution when the sample statistics are used to estimate
-#'   population parameters, and to use this null distribution as the basis for
-#'   critical values. The function \code{LcKS} generalizes this solution for a
-#'   range of continuous distributions.
+#'   parameters are known. In other words, it is biased and results in increased
+#'   Type II error rates. Lilliefors (1967, 1969) provided a solution, using
+#'   Monte Carlo simulation to approximate the shape of the null distribution
+#'   when the sample statistics are used to estimate population parameters, and
+#'   to use this null distribution as the basis for critical values. The
+#'   function \code{LcKS} generalizes this solution for a range of continuous
+#'   distributions.
 #'
 #' @author Phil Novack-Gottshall \email{pnovack-gottshall@@ben.edu}, based on
 #'   code from Charles Geyer (University of Minnesota).
 #'
-#' @references Gihman, I. I. 1952.  Ob empiriceskoj funkcii raspredelenija
-#'   slucaje grouppirovki dannych [On the empirical distribution function in the
-#'   case of grouping of observations]. \emph{Doklady Akademii Nauk SSSR} 82:
-#'   837-840.
 #' @references Lilliefors, H. W. 1967. On the Kolmogorov-Smirnov test for
 #'   normality with mean and variance unknown. \emph{Journal of the American
 #'   Statistical Association} 62(318):399-402.
