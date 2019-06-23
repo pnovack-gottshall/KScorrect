@@ -97,15 +97,17 @@
 #'   small variance (i.e., duplicate observations) or when a Monte Carlo sample
 #'   cannot be fit by the specified \code{G}.
 #'
-#'   Parellel computing can be implemented using \code{parallel = TRUE}, with
-#'   default \code{\link[parallel]{detectCores} - 1} number of cores. Parallel
-#'   computing is generally advisable for the more complicated cumulative
-#'   density functions (univariate normal mixture, gamma, Weibull), where
-#'   maximum likelihood estimation is time-intensive, but it generally not
-#'   advisable for density functions with quickly calculated sample statistics.
-#'   Warnings within the function provide sensible recommendations, but users
-#'   are encouraged to experiment to discover their fastest implementation for
-#'   their individual needs.
+#'   Parellel computing can be implemented using \code{parallel = TRUE}, using
+#'   the operating-system versatile \code{\link[doParallel]} infrastructure,
+#'   using a default \code{\link[parallel]{detectCores} - 1} number of cores.
+#'   Parallel computing is generally advisable for the more complicated
+#'   cumulative density functions (i.e., univariate normal mixture, gamma,
+#'   Weibull), where maximum likelihood estimation is time-intensive, but is
+#'   generally not advisable for density functions with quickly calculated
+#'   sample statistics (i.e., other distribution functions). Warnings within the
+#'   function provide sensible recommendations, but users are encouraged to
+#'   experiment to discover their fastest implementation for their individual
+#'   cases.
 #'
 #' @return A list containing the following components:
 #'
@@ -212,6 +214,13 @@
 #' Lc <- LcKS(x, cdf = "pmixnorm", nreps = 499, G = G)     # Restricting to likely G saves time
 #' # But note changes null hypothesis: now testing against just two-component mixture
 #' Lc$p.value
+#'
+#' # Running 'in parallel'
+#' require(doParallel)
+#' set.seed(3124)
+#' x <- rmixnorm(3000, mean = c(10, 18, 20), sd = c(3, 15, .1), pro = c(1, 3, 1))
+#' system.time(LcKS(x, "pgamma"))
+#' system.time(LcKS(x, "pgamma", parallel = TRUE)) # Shoud be faster
 #' }
 #'
 #' @export
