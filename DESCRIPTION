@@ -6,8 +6,12 @@ Depends:
     R (>= 3.6.0)
 Imports:
     MASS (>= 7.3.0),
+    doParallel (>= 1.0.14),
+    foreach (>= 1.4.4),
+    iterators (>= 1.0.10),
+    parallel (>= 3.6.0),
     mclust (>= 5.4)
-Date: 2019-06-25
+Date: 2019-06-30
 Author: Phil Novack-Gottshall, Steve C. Wang
 Maintainer: Phil Novack-Gottshall <pnovack-gottshall@ben.edu>
 Description: Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use
@@ -23,3 +27,4 @@ URL: https://github.com/pnovack-gottshall/KScorrect
 BugReports: https://github.com/pnovack-gottshall/KScorrect/issues
 LazyData: TRUE
 RoxygenNote: 6.1.1
+Encoding: UTF-8

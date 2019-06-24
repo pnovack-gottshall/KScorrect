@@ -43,7 +43,7 @@ A list containing the following components:
 
   \item{D.obs}{The value of the test statistic \emph{D} for the observed
   sample.} \item{D.sim}{Simulation distribution of test statistics, with
-  \code{length=nreps}. This can be used to calculate critical values; see
+  \code{length = nreps}. This can be used to calculate critical values; see
   examples.} \item{p.value}{\emph{p}-value of the test, calculated as
   \eqn{(\sum(D.sim > D.obs) + 1) / (nreps + 1)}.}
 }
@@ -62,21 +62,22 @@ The function builds a simulation distribution \code{D.sim} of length
   \code{nreps} by drawing random samples from the specified continuous
   distribution function \code{cdf} with parameters calculated from the
   provided sample \code{x}. Observed statistic \emph{\code{D}} and simulated
-  test statistics are calculated using \code{\link[stats]{ks.test}}.
+  test statistics are calculated using a simplified version of
+  \code{\link[stats]{ks.test}}.
 
-  The default \code{nreps=4999} provides accurate \emph{p}-values.
-  \code{nreps=1999} is sufficient for most cases, and computationally faster
-  when dealing with more complicated distributions (such as univariate normal
-  mixtures, gamma, and Weibull).
+  The default \code{nreps = 4999} provides accurate \emph{p}-values.
+  \code{nreps = 1999} is sufficient for most cases, and computationally
+  faster when dealing with more complicated distributions (such as univariate
+  normal mixtures, gamma, and Weibull). See below for potentially faster
+  parallel implementations.
 
   The \emph{p}-value is calculated as the number of Monte Carlo samples with
   test statistics \emph{D} as extreme as or more extreme than that in the
   observed sample \code{D.obs}, divided by the \code{nreps} number of Monte
   Carlo samples. A value of 1 is added to both the numerator and denominator
   to allow the observed sample to be represented within the null distribution
-  (Manly 2004); this has the benefit of avoiding nonsensical
-  \code{p.value=0.000} and accounts for the fact that the \emph{p}-value is
-  an estimate.
+  (Manly 2004); this has the benefit of avoiding nonsensical \code{p.value =
+  0.000} and accounts for the fact that the \emph{p}-value is an estimate.
 
   Parameter estimates are calculated for the specified continuous
   distribution, using maximum-likelihood estimates. When testing against the
@@ -105,23 +106,35 @@ The function builds a simulation distribution \code{D.sim} of length
   components.
 
   Be aware that constraining \code{G} changes the null hypothesis. The
-  default (\code{G=1:9}) null hypothesis is that a sample was drawn from
-  \emph{any \code{G=1:9}-component mixture distribution}. Specifying a
-  particular value, such as \code{G=2}, restricts the null hypothesis to
+  default (\code{G = 1:9}) null hypothesis is that a sample was drawn from
+  \emph{any \code{G = 1:9}-component mixture distribution}. Specifying a
+  particular value, such as \code{G = 2}, restricts the null hypothesis to
   particular mixture distributions with just \code{G} components, even if
   simulated samples might better be represented as different mixture models.
 
-  The \code{LcKS(cdf="pmixnorm")} test implements two control loops to avoid
-  errors caused by this constraint and when working with problematic samples.
-  The first loop occurs during model-selection for the observed sample
-  \code{x}, and allows for estimation of parameters for the second-best model
-  when those for the optimal model are not able to be calculated by the EM
-  algorithm. A second loop occurs during the simulation algorithm, rejecting
-  samples that cannot be fit by the mixture model specified by the observed
-  sample \code{x}. Such problematic cases are most common when the observed
-  or simulated samples have a component(s) with very small variance (i.e.,
-  duplicate observations) or when a Monte Carlo sample cannot be fit by the
-  specified \code{G}.
+  The \code{LcKS(cdf = "pmixnorm")} test implements two control loops to
+  avoid errors caused by this constraint and when working with problematic
+  samples. The first loop occurs during model-selection for the observed
+  sample \code{x}, and allows for estimation of parameters for the
+  second-best model when those for the optimal model are not able to be
+  calculated by the EM algorithm. A second loop occurs during the simulation
+  algorithm, rejecting samples that cannot be fit by the mixture model
+  specified by the observed sample \code{x}. Such problematic cases are most
+  common when the observed or simulated samples have a component(s) with very
+  small variance (i.e., duplicate observations) or when a Monte Carlo sample
+  cannot be fit by the specified \code{G}.
+
+  Parellel computing can be implemented using \code{parallel = TRUE}, using
+  the operating-system versatile \code{\link[doParallel]{doParallel-package}}
+  and \code{\link[foreach]{foreach}} infrastructure, using a default
+  \code{\link[parallel]{detectCores} - 1} number of cores. Parallel computing
+  is generally advisable for the more complicated cumulative density
+  functions (i.e., univariate normal mixture, gamma, Weibull), where maximum
+  likelihood estimation is time-intensive, but is generally not advisable for
+  density functions with quickly calculated sample statistics (i.e., other
+  distribution functions). Warnings within the function provide sensible
+  recommendations, but users are encouraged to experiment to discover their
+  fastest implementation for their individual cases.
 }
 \note{
 The Kolmogorov-Smirnov (such as \code{ks.test}) is only valid as a
@@ -131,20 +144,20 @@ The Kolmogorov-Smirnov (such as \code{ks.test}) is only valid as a
   statistic; i.e., using the sample to estimate population parameters brings
   the Kolmogorov-Smirnov test statistic \emph{D} closer to the null
   distribution than it would be under the hypothesis where the population
-  parameters are known (Gihman 1952). In other words, it is biased and
-  results in increased Type II error rates. Lilliefors (1967, 1969) provided
-  a solution, using Monte Carlo simulation to approximate the shape of the
-  null distribution when the sample statistics are used to estimate
-  population parameters, and to use this null distribution as the basis for
-  critical values. The function \code{LcKS} generalizes this solution for a
-  range of continuous distributions.
+  parameters are known. In other words, it is biased and results in increased
+  Type II error rates. Lilliefors (1967, 1969) provided a solution, using
+  Monte Carlo simulation to approximate the shape of the null distribution
+  when the sample statistics are used to estimate population parameters, and
+  to use this null distribution as the basis for critical values. The
+  function \code{LcKS} generalizes this solution for a range of continuous
+  distributions.
 }
 \examples{
 x <- runif(200)
-Lc <- LcKS(x, cdf="pnorm", nreps=999)
+Lc <- LcKS(x, cdf = "pnorm", nreps = 999)
 hist(Lc$D.sim)
 abline(v = Lc$D.obs, lty = 2)
-print(Lc, max=50)  # Print first 50 simulated statistics
+print(Lc, max = 50)  # Print first 50 simulated statistics
 # Approximate p-value (usually) << 0.05
 
 # Confirmation uncorrected version has increased Type II error rate when
@@ -154,21 +167,21 @@ ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 # Confirm critical values for normal distribution are correct
 nreps <- 9999
 x <- rnorm(25)
-Lc <- LcKS(x, "pnorm", nreps=nreps)
+Lc <- LcKS(x, "pnorm", nreps = nreps)
 sim.Ds <- sort(Lc$D.sim)
 crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 # Lilliefors' (1967) critical values, using improved values from
-#   Parsons & Wirsching (1982) (for n=25):
+#   Parsons & Wirsching (1982) (for n = 25):
 # 0.141 0.148 0.157 0.172 0.201
 round(sim.Ds[crit], 3)			# Approximately the same critical values
 
 # Confirm critical values for exponential are the same as reported by Lilliefors (1969)
 nreps <- 9999
 x <- rexp(25)
-Lc <- LcKS(x, "pexp", nreps=nreps)
+Lc <- LcKS(x, "pexp", nreps = nreps)
 sim.Ds <- sort(Lc$D.sim)
 crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
-# Lilliefors' (1969) critical values (for n=25):
+# Lilliefors' (1969) critical values (for n = 25):
 # 0.170 0.180 0.191 0.210 0.247
 round(sim.Ds[crit], 3)			# Approximately the same critical values
 
@@ -176,39 +189,41 @@ round(sim.Ds[crit], 3)			# Approximately the same critical values
 # Gamma and Weibull tests require functions from the 'MASS' package
 # Takes time for maximum likelihood optimization of statistics
 require(MASS)
-x <- runif(100, min=1, max=100)
-Lc <- LcKS(x, cdf="pgamma", nreps=499)
+x <- runif(100, min = 1, max = 100)
+Lc <- LcKS(x, cdf = "pgamma", nreps = 499)
 Lc$p.value
 
 # Confirm critical values for Weibull the same as reported by Parsons & Wirsching (1982)
 nreps <- 9999
-x <- rweibull(25, shape=1, scale=1)
-Lc <- LcKS(x, "pweibull", nreps=nreps)
+x <- rweibull(25, shape = 1, scale = 1)
+Lc <- LcKS(x, "pweibull", nreps = nreps)
 sim.Ds <- sort(Lc$D.sim)
 crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
-# Parsons & Wirsching (1982) critical values (for n=25):
+# Parsons & Wirsching (1982) critical values (for n = 25):
 # 0.141 0.148 0.157 0.172 0.201
 round(sim.Ds[crit], 3)			# Approximately the same critical values
 
 # Mixture test requires functions from the 'mclust' package
 # Takes time to identify model parameters
 require(mclust)
-x <- rmixnorm(200, mean=c(10, 20), sd=2, pro=c(1,3))
-Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=1:9)   # Default G (1:9) takes long time
+x <- rmixnorm(200, mean = c(10, 20), sd = 2, pro = c(1,3))
+Lc <- LcKS(x, cdf = "pmixnorm", nreps = 499, G = 1:9)   # Default G (1:9) takes long time
 Lc$p.value
 G <- Mclust(x)$parameters$variance$G              # Optimal model has only two components
-Lc <- LcKS(x, cdf="pmixnorm", nreps=499, G=G)     # Restricting to likely G saves time
+Lc <- LcKS(x, cdf = "pmixnorm", nreps = 499, G = G)     # Restricting to likely G saves time
 # But note changes null hypothesis: now testing against just two-component mixture
 Lc$p.value
+
+# Running 'in parallel'
+require(doParallel)
+set.seed(3124)
+x <- rmixnorm(300, mean = c(110, 190, 200), sd = c(3, 15, .1), pro = c(1, 3, 1))
+system.time(LcKS(x, "pgamma"))
+system.time(LcKS(x, "pgamma", parallel = TRUE)) # Should be faster
 }
 
 }
 \references{
-Gihman, I. I. 1952.  Ob empiriceskoj funkcii raspredelenija
-  slucaje grouppirovki dannych [On the empirical distribution function in the
-  case of grouping of observations]. \emph{Doklady Akademii Nauk SSSR} 82:
-  837-840.
-
 Lilliefors, H. W. 1967. On the Kolmogorov-Smirnov test for
   normality with mean and variance unknown. \emph{Journal of the American
   Statistical Association} 62(318):399-402.

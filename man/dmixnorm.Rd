@@ -51,17 +51,17 @@ distributions with means equal to \code{mean}, standard deviations equal to
 }
 \details{
 These functions use, modify, and wrap around those from the
-  \code{mclust} package, especially \code{\link[mclust]{dens}},
-  \code{\link[mclust]{sim}}, and \code{\link[mclust]{quantileMclust}}.
-  Functions are slightly faster than the corresponding \code{mclust}
-  functions when used with univariate distributions.
+  \code{mclust} package, especially \code{\link[mclust]{dens}}, and
+  \code{\link[mclust]{sim}}. Functions are slightly faster than the
+  corresponding \code{mclust} functions when used with univariate
+  distributions.
 
   Unlike \code{mclust}, which primarily focuses on parameter estimation based
   on mixture samples, the functions here are modified to calculate PDFs,
   CDFs, approximate quantiles, and random numbers for mixture distributions
   with user-specified parameters. The functions are written to emulate the
   syntax of other R distribution functions (e.g.,
-  \code{\link[stats]{dnorm}}).
+  \code{\link[stats]{Normal}}).
 
   The number of mixture components (argument \code{G} in \code{mclust}) is
   specified from the length of the \code{mean} vector. If a single \code{sd}
@@ -154,7 +154,7 @@ legend("topleft", legend=c("known", "approximation"), pch=c(NA,1),
 \seealso{
 \code{\link[stats]{Distributions}} for other standard distributions,
   and \code{mclust::\link[mclust]{dens}}, \code{\link[mclust]{sim}}, and
-  \code{\link[mclust]{quantileMclust}} for alternative density, quantile, and
+  \code{\link[mclust]{cdfMclust}} for alternative density, quantile, and
   random number functions for multivariate mixture distributions.
 }
 \author{

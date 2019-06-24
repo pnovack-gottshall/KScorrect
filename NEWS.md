@@ -1,9 +1,9 @@
-# KScorrect 1.3.1 (2019-06-25)
+# KScorrect 1.4.0 (2019-06-30)
 * Added new function 'ks_test_stat' to more quickly calculate test statistic D.
-* Added new parameter 'varModel' to 'LcKS' to allow users to specify 'equal' or 'variable' variance models for mixture distributions.
-* Added option to run 'LcKS' in parallel, using 'doParallel' infrastructure. Added new parameters 'parallel' and 'cores' to control parallel behavior.
+* Added new argument 'varModel' to 'LcKS' to allow users to specify 'equal' or 'variable' variance models for mixture distributions.
+* Added option to run 'LcKS' in parallel, using 'doParallel' and 'foreach' infrastructure. Added new parameters 'parallel' and 'cores' to control parallel behavior.
 
-# KScorrect 1.3.1 (2019-01-05)
+# KScorrect 1.3.0 (2019-01-05)
 * Changed spline method from default to 'hyman' in qmixnorm that is more appropriate for handling monotonic sequences, and improves performance under certain mixture models. (Thanks to Qiong Zhang for catching the error.)
 
 # KScorrect 1.2.5 (2018-09-17)
