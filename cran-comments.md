@@ -11,4 +11,4 @@ There were no ERRORS.
 
 Reposited on GitHub at https://github.com/pnovack-gottshall/KScorrect.
 
-This is a revised submission of the package to CRAN.
+This is a revised submission of the package to CRAN. Build was tested (and passed) on TravisCI and R-Hub.
