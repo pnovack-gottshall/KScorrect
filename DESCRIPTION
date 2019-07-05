@@ -1,7 +1,7 @@
 Package: KScorrect
 Type: Package
 Title: Lilliefors-Corrected Kolmogorov-Smirnov Goodness-of-Fit Tests
-Version: 1.4.0
+Version: 1.4.1
 Depends:
     R (>= 3.6.0)
 Imports:
@@ -11,7 +11,7 @@ Imports:
     iterators (>= 1.0.10),
     parallel (>= 3.6.0),
     mclust (>= 5.4)
-Date: 2019-06-30
+Date: 2019-07-05
 Author: Phil Novack-Gottshall, Steve C. Wang
 Maintainer: Phil Novack-Gottshall <pnovack-gottshall@ben.edu>
 Description: Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use

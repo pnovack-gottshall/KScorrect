@@ -2,8 +2,8 @@
 #'
 #' Internal function not intended to be called directly by users.
 #'
-#' Simplified and faster \code{\link{ks.test}} function that calculates just the
-#' two-sided test statistic D.
+#' Simplified and faster \code{\link[stats]{ks.test}} function that calculates
+#' just the test statistic D for the two-sided null hypothesis.
 #'
 #' @param x a numeric vector of data values.
 #' @param y a character string naming a cumulative distribution function or an
@@ -13,7 +13,8 @@
 #'   by y.
 #'
 #' @note Calculating the Kolmogorov-Smirnov test statistic D by itself is faster
-#'   than calculating the other ouput that that function produces.
+#'   than calculating the other output that that function produces. This
+#'   function only tests the two-sided null hypothesis.
 #'
 #' @seealso \code{\link[stats]{ks.test}}
 #'
