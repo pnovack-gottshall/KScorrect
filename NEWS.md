@@ -1,16 +1,19 @@
+# KScorrect 1.4.1 (2019-07-05)
+* Text modifications to 'ks_test_stat' help docs, especially to note only tests two-sided null hypothesis.
+
 # KScorrect 1.4.0 (2019-06-30)
 * Added new function 'ks_test_stat' to more quickly calculate test statistic D.
-* Added new argument 'varModel' to 'LcKS' to allow users to specify 'equal' or 'variable' variance models for mixture distributions.
-* Added option to run 'LcKS' in parallel, using 'doParallel' and 'foreach' infrastructure. Added new parameters 'parallel' and 'cores' to control parallel behavior.
+* Added new argument 'varModel' to 'LcKS' to allow users to specify 'equal' or 'variable' variance models for mixture distributions (GitHub issue #6).
+* Added option to run 'LcKS' in parallel, using 'doParallel' and 'foreach' infrastructure. Added new parameters 'parallel' and 'cores' to control parallel behavior (GitHub issue #4).
 
 # KScorrect 1.3.0 (2019-01-05)
-* Changed spline method from default to 'hyman' in qmixnorm that is more appropriate for handling monotonic sequences, and improves performance under certain mixture models. (Thanks to Qiong Zhang for catching the error.)
+* Changed spline method from default to 'hyman' in qmixnorm that is more appropriate for handling monotonic sequences, and improves performance under certain mixture models. (Thanks to Qiong Zhang for catching the error; GitHub issue #5.)
 
 # KScorrect 1.2.5 (2018-09-17)
-* Changed number of randomly generated samples per mixture components ('nr') to 1000, to match help file text. nr = 1000 is much faster and nearly equally precise.
+* Changed number of randomly generated samples per mixture components ('nr') to 1000, to match help file text. nr = 1000 is much faster and nearly equally precise (GitHub issue #1).
 
 # KScorrect 1.2.4 (2018-08-14)
-* Silenced 'verbose' arg when calling 'mclust' functions.
+* Silenced 'verbose' arg when calling 'mclust' functions (GitHub issue #2).
 
 # KScorrect 1.2.3 (2018-02-23)
 * Reformatted functions to Google / Hadley style.
