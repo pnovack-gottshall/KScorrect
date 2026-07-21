@@ -4,8 +4,15 @@
 \alias{LcKS}
 \title{Lilliefors-corrected Kolmogorov-Smirnov Goodness-Of-Fit Test}
 \usage{
-LcKS(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"),
-  parallel = FALSE, cores = NULL)
+LcKS(
+  x,
+  cdf,
+  nreps = 4999,
+  G = 1:9,
+  varModel = c("E", "V"),
+  parallel = FALSE,
+  cores = NULL
+)
 }
 \arguments{
 \item{x}{A numeric vector of data values (observed sample).}
@@ -124,7 +131,7 @@ The function builds a simulation distribution \code{D.sim} of length
   small variance (i.e., duplicate observations) or when a Monte Carlo sample
   cannot be fit by the specified \code{G}.
 
-  Parellel computing can be implemented using \code{parallel = TRUE}, using
+  Parallel computing can be implemented using \code{parallel = TRUE}, using
   the operating-system versatile \code{\link[doParallel]{doParallel-package}}
   and \code{\link[foreach]{foreach}} infrastructure, using a default
   \code{\link[parallel]{detectCores} - 1} number of cores. Parallel computing

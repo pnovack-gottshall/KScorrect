@@ -27,9 +27,10 @@ Or downloaded directly in R using:
 	devtools::install_github("pnovack-gottshall/KScorrect")
 	library(KScorrect)
 	
-The most recent commit is currently: [![Travis-CI Build 
-Status](https://travis-ci.org/pnovack-gottshall/KScorrect.svg?branch=master)](https://travis-ci.org/pnovack-gottshall/KScorrect)
-(Travis CI)
+The most recent commit is currently CI/CD at Github Actions
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/pnovack-gottshall/KScorrect/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pnovack-gottshall/KScorrect/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 This package is authored by Phil Novack-Gottshall 
 (<mailto:pnovack-gottshall@ben.edu>) and Steve C. Wang 
@@ -37,4 +38,4 @@ This package is authored by Phil Novack-Gottshall
 
 The current total number of downloads of the ecospace package from the RStudio 
 CRAN mirror is: [![Number of 
-Downloads](http://cranlogs.r-pkg.org/badges/grand-total/KScorrect)](https://github.com/metacran/cranlogs.app)
+Downloads](http://cranlogs.r-pkg.org/badges/grand-total/KScorrect)](https://github.com/r-hub/cranlogs.app)

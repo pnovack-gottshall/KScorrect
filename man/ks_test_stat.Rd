@@ -11,7 +11,7 @@ ks_test_stat(x, y, ...)
 
 \item{y}{a character string naming a cumulative distribution function or an
 actual cumulative distribution function such as pnorm. Only continuous CDFs
-are valid. See /code{LcKS} for accepted functions.}
+are valid. See \code{LcKS} for accepted functions.}
 
 \item{...}{parameters of the distribution specified (as a character string)
 by y.}

@@ -99,7 +99,7 @@
 #'   small variance (i.e., duplicate observations) or when a Monte Carlo sample
 #'   cannot be fit by the specified \code{G}.
 #'
-#'   Parellel computing can be implemented using \code{parallel = TRUE}, using
+#'   Parallel computing can be implemented using \code{parallel = TRUE}, using
 #'   the operating-system versatile \code{\link[doParallel]{doParallel-package}}
 #'   and \code{\link[foreach]{foreach}} infrastructure, using a default
 #'   \code{\link[parallel]{detectCores} - 1} number of cores. Parallel computing

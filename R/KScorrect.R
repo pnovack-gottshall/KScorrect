@@ -17,9 +17,6 @@
 #'
 #' @author Phil Novack-Gottshall \email{pnovack-gottshall@@ben.edu}
 #' @author Steve C. Wang \email{scwang@@swarthmore.edu}
-#' @name KScorrect-package
-#' @aliases KScorrect-package KScorrect
-#' @docType package
 #'
 #' @examples
 #' # Get the package version and citation of KScorrect
@@ -40,4 +37,4 @@
 #' x <- rlunif(200, min=exp(1), max=exp(10)) # random loguniform sample
 #' Lc <- LcKS(x, cdf="plnorm")
 #' Lc$p.value      # Approximate p-value: (usually) << 0.05
-NULL
+"_PACKAGE"

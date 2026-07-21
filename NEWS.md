@@ -1,3 +1,9 @@
+# KScorrect 1.4.2 (2026-07-21)
+* Added structured R expression for Authors@R in DESCRIPTION.
+* Corrected incorrect bracket link in 'ks_test_stat'.
+* Removed unused lazy data requirement in DESCRIPTION.
+* Migrated CI from Travis CI to Github Actions.
+
 # KScorrect 1.4.1 (2019-07-05)
 * Text modifications to 'ks_test_stat' help docs, especially to note only tests two-sided null hypothesis.
 

@@ -2,8 +2,8 @@
 % Please edit documentation in R/KScorrect.R
 \docType{package}
 \name{KScorrect-package}
-\alias{KScorrect-package}
 \alias{KScorrect}
+\alias{KScorrect-package}
 \title{KScorrect: Lilliefors-Corrected Kolmogorov-Smirnov Goodness-of-Fit Tests}
 \description{
 Implements the Lilliefors-corrected Kolmogorov-Smirnov test for use in
@@ -41,6 +41,14 @@ ks.test(x, "pnorm", mean(x), sd(x))   # p-value always larger, (usually) > 0.05
 x <- rlunif(200, min=exp(1), max=exp(10)) # random loguniform sample
 Lc <- LcKS(x, cdf="plnorm")
 Lc$p.value      # Approximate p-value: (usually) << 0.05
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/pnovack-gottshall/KScorrect}
+  \item Report bugs at \url{https://github.com/pnovack-gottshall/KScorrect/issues}
+}
+
 }
 \author{
 Phil Novack-Gottshall \email{pnovack-gottshall@ben.edu}
