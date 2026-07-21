@@ -3,6 +3,7 @@
 * Corrected incorrect bracket link in 'ks_test_stat'.
 * Removed unused lazy data requirement in DESCRIPTION.
 * Migrated CI from Travis CI to Github Actions.
+* Suppress warnings in the spline function in 'qmixnorm' to avoid unnecessary warnings.
 
 # KScorrect 1.4.1 (2019-07-05)
 * Text modifications to 'ks_test_stat' help docs, especially to note only tests two-sided null hypothesis.
