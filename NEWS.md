@@ -1,3 +1,5 @@
+# KScorrect (development version)
+
 # KScorrect 1.4.2 (2026-07-21)
 * Added structured R expression for Authors@R in DESCRIPTION.
 * Corrected incorrect bracket link in 'ks_test_stat'.
