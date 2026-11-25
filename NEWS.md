@@ -1,4 +1,5 @@
 # KScorrect (development version)
+* Added new argument 'cache' to 'LcKS' to reuse the simulation distribution across samples of the same size, for distributions where it does not depend on the estimated parameters.
 
 # KScorrect 1.4.2 (2026-07-21)
 * Added structured R expression for Authors@R in DESCRIPTION.
