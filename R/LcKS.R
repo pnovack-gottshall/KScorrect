@@ -32,6 +32,10 @@
 #'   \code{default}).
 #' @param cores Numeric value to control how many cores to build when running in
 #'   parallel. \code{Default = \link[parallel]{detectCores} - 1}.
+#' @param cache Logical value that switches between reusing the simulation
+#'   distribution across samples of the same size (if \code{TRUE}) or not (if
+#'   \code{FALSE}, the \code{default}). Only available for some distributions.
+#'   See \code{details} below.
 #'
 #' @details The function builds a simulation distribution \code{D.sim} of length
 #'   \code{nreps} by drawing random samples from the specified continuous
@@ -111,6 +115,17 @@
 #'   recommendations, but users are encouraged to experiment to discover their
 #'   fastest implementation for their individual cases.
 #'
+#'   With \code{cache = TRUE}, \code{D.sim} is simulated once per combination of
+#'   \code{cdf}, sample size, and \code{nreps}, and then reused for the rest of
+#'   the session, which makes repeated tests much faster. This is possible for
+#'   the normal, lognormal, uniform, loguniform, and exponential distributions,
+#'   where the null distribution of \emph{D} depends only on the sample size. The
+#'   simulation uses a fixed seed and restores the state of the user's random
+#'   number generator (except for a pending Box-Muller deviate). Because tests
+#'   of same-size samples then share the Monte Carlo error of \code{D.sim}, a
+#'   large \code{nreps} is advisable. The argument is ignored, with a warning,
+#'   for other distributions.
+#'
 #' @return A list containing the following components:
 #'
 #'   \item{D.obs}{The value of the test statistic \emph{D} for the observed
@@ -188,6 +203,10 @@
 #' # 0.170 0.180 0.191 0.210 0.247
 #' round(sim.Ds[crit], 3)			# Approximately the same critical values
 #'
+#' # Reuse the simulation distribution across samples of the same size
+#' p <- replicate(100, LcKS(rexp(25), "pexp", nreps = 999, cache = TRUE)$p.value)
+#' mean(p <= 0.05)   # Approximately 0.05
+#'
 #' \dontrun{
 #' # Gamma and Weibull tests require functions from the 'MASS' package
 #' # Takes time for maximum likelihood optimization of statistics
@@ -242,7 +261,8 @@
 #' @importFrom stats rexp
 #' @importFrom stats rgamma
 #' @importFrom iterators icount
-LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel = FALSE, cores = NULL) {
+LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel = FALSE,
+                 cores = NULL, cache = FALSE) {
   # Basic troubleshooting:
   if (missing(x) || length(x) == 0L || mode(x) != "numeric")
     stop("'x' must be a non-empty numeric vector")
@@ -282,6 +302,16 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
       stop("Set 'cores' to integer greater than 1 to run in parallel.")
     }
   }
+  if (!isTRUE(cache) && !isFALSE(cache))
+    stop("'cache' must be TRUE or FALSE.")
+  if (cache && !cdf %in% names(cacheable_cdfs)) {
+    warning("'cache' is ignored for your 'cdf' distribution, whose null distribution depends on the estimated parameters.")
+    cache <- FALSE
+  }
+  if (cache && parallel) {
+    warning("'parallel' is ignored when 'cache = TRUE'.")
+    parallel <- FALSE
+  }
   if (!parallel & cdf %in% c("pgamma", "pweibull", "pmixnorm"))
     warning("Consider setting 'parallel = TRUE' to increase the speed of this function.")
   if (parallel & !cdf %in% c("pgamma", "pweibull", "pmixnorm"))
@@ -304,7 +334,9 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
     mean.x <- mean(x)
     sd.x <- sd(x)
     D.obs <- ks_test_stat(x, "pnorm", mean = mean.x, sd = sd.x)
-    if (parallel) {
+    if (cache) {
+      D.sim <- cached_D_sim("pnorm", n, nreps)
+    } else if (parallel) {
       D.sim <- foreach::foreach(iterators::icount(nreps), .combine = c,
                                 .inorder = FALSE,
                                 .packages = c("KScorrect")) %dopar% {
@@ -323,7 +355,9 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
     meanlog.x <- mean(log(x))
     sdlog.x <- sd(log(x))
     D.obs <- ks_test_stat(x, "plnorm", meanlog = meanlog.x, sdlog = sdlog.x)
-    if (parallel) {
+    if (cache) {
+      D.sim <- cached_D_sim("plnorm", n, nreps)
+    } else if (parallel) {
       D.sim <- foreach::foreach(iterators::icount(nreps), .combine = c,
                                 .inorder = FALSE,
                                 .packages = c("KScorrect")) %dopar% {
@@ -343,7 +377,9 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
     min.x <- min(x)
     max.x <- max(x)
     D.obs <- ks_test_stat(x, "punif", min = min.x, max = max.x)
-    if (parallel) {
+    if (cache) {
+      D.sim <- cached_D_sim("punif", n, nreps)
+    } else if (parallel) {
       D.sim <- foreach::foreach(iterators::icount(nreps), .combine = c,
                                 .inorder = FALSE,
                                 .packages = c("KScorrect")) %dopar% {
@@ -362,7 +398,9 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
     min.x <- min(x)
     max.x <- max(x)
     D.obs <- ks_test_stat(x, "plunif", min = min.x, max = max.x)
-    if (parallel) {
+    if (cache) {
+      D.sim <- cached_D_sim("plunif", n, nreps)
+    } else if (parallel) {
       D.sim <- foreach::foreach(iterators::icount(nreps), .combine = c,
                                 .inorder = FALSE,
                                 .packages = c("KScorrect")) %dopar% {
@@ -439,7 +477,9 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
   if (cdf == "pexp") {
     rate.x <- 1 / mean(x)
     D.obs <- ks_test_stat(x, "pexp", rate = rate.x)
-    if (parallel) {
+    if (cache) {
+      D.sim <- cached_D_sim("pexp", n, nreps)
+    } else if (parallel) {
       D.sim <- foreach::foreach(iterators::icount(nreps), .combine = c,
                                 .inorder = FALSE,
                                 .packages = c("KScorrect")) %dopar% {

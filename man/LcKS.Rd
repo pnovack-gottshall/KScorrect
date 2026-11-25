@@ -11,7 +11,8 @@ LcKS(
   G = 1:9,
   varModel = c("E", "V"),
   parallel = FALSE,
-  cores = NULL
+  cores = NULL,
+  cache = FALSE
 )
 }
 \arguments{
@@ -44,6 +45,11 @@ algorithm in parallel (if \code{TRUE}) or not (if \code{FALSE}, the
 
 \item{cores}{Numeric value to control how many cores to build when running in
 parallel. \code{Default = \link[parallel]{detectCores} - 1}.}
+
+\item{cache}{Logical value that switches between reusing the simulation
+distribution across samples of the same size (if \code{TRUE}) or not (if
+\code{FALSE}, the \code{default}). Only available for some distributions.
+See \code{details} below.}
 }
 \value{
 A list containing the following components:
@@ -142,6 +148,17 @@ The function builds a simulation distribution \code{D.sim} of length
   distribution functions). Warnings within the function provide sensible
   recommendations, but users are encouraged to experiment to discover their
   fastest implementation for their individual cases.
+
+  With \code{cache = TRUE}, \code{D.sim} is simulated once per combination of
+  \code{cdf}, sample size, and \code{nreps}, and then reused for the rest of
+  the session, which makes repeated tests much faster. This is possible for
+  the normal, lognormal, uniform, loguniform, and exponential distributions,
+  where the null distribution of \emph{D} depends only on the sample size. The
+  simulation uses a fixed seed and restores the state of the user's random
+  number generator (except for a pending Box-Muller deviate). Because tests
+  of same-size samples then share the Monte Carlo error of \code{D.sim}, a
+  large \code{nreps} is advisable. The argument is ignored, with a warning,
+  for other distributions.
 }
 \note{
 The Kolmogorov-Smirnov (such as \code{ks.test}) is only valid as a
@@ -191,6 +208,10 @@ crit <- round(c(.8, .85, .9, .95, .99) * nreps, 0)
 # Lilliefors' (1969) critical values (for n = 25):
 # 0.170 0.180 0.191 0.210 0.247
 round(sim.Ds[crit], 3)			# Approximately the same critical values
+
+# Reuse the simulation distribution across samples of the same size
+p <- replicate(100, LcKS(rexp(25), "pexp", nreps = 999, cache = TRUE)$p.value)
+mean(p <= 0.05)   # Approximately 0.05
 
 \dontrun{
 # Gamma and Weibull tests require functions from the 'MASS' package
