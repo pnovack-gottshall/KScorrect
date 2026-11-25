@@ -118,8 +118,9 @@
 #'   With \code{cache = TRUE}, \code{D.sim} is simulated once per combination of
 #'   \code{cdf}, sample size, and \code{nreps}, and then reused for the rest of
 #'   the session, which makes repeated tests much faster. This is possible for
-#'   the normal, lognormal, uniform, loguniform, and exponential distributions,
-#'   where the null distribution of \emph{D} depends only on the sample size. The
+#'   the normal, lognormal, uniform, loguniform, exponential, and Weibull
+#'   distributions, where the null distribution of \emph{D} depends only on the
+#'   sample size (for Weibull, up to the precision of the optimization). The
 #'   simulation uses a fixed seed and restores the state of the user's random
 #'   number generator (except for a pending Box-Muller deviate). Because tests
 #'   of same-size samples then share the Monte Carlo error of \code{D.sim}, a
@@ -312,7 +313,7 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
     warning("'parallel' is ignored when 'cache = TRUE'.")
     parallel <- FALSE
   }
-  if (!parallel & cdf %in% c("pgamma", "pweibull", "pmixnorm"))
+  if (!parallel & !cache & cdf %in% c("pgamma", "pweibull", "pmixnorm"))
     warning("Consider setting 'parallel = TRUE' to increase the speed of this function.")
   if (parallel & !cdf %in% c("pgamma", "pweibull", "pmixnorm"))
     warning("Consider setting 'parallel = FALSE' to increase the speed of this function.")
@@ -544,7 +545,9 @@ LcKS <- function(x, cdf, nreps = 4999, G = 1:9, varModel = c("E", "V"), parallel
     param[2] <- param[2] * scale.x	# Re-scale back
     D.obs <-
       ks_test_stat(x, "pweibull", shape = param[1], scale = param[2])
-    if (parallel) {
+    if (cache) {
+      D.sim <- cached_D_sim("pweibull", n, nreps)
+    } else if (parallel) {
       D.sim <- foreach::foreach(iterators::icount(nreps), .combine = c,
                                 .inorder = FALSE,
                                 .packages = c("KScorrect", "MASS")) %dopar% {

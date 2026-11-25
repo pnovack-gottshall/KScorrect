@@ -3,7 +3,8 @@
 # When 'cdf' is a location-scale family (possibly after taking logs) and its
 # parameters are estimated equivariantly, the null distribution of D depends
 # only on the sample size, so that one simulation can serve every sample of the
-# same size.
+# same size. For the Weibull distribution, this holds up to the precision of
+# MASS::fitdistr().
 
 null_cache <- new.env(parent = emptyenv())
 
@@ -13,12 +14,14 @@ null_cache <- new.env(parent = emptyenv())
 #' @importFrom stats qlnorm
 #' @importFrom stats qunif
 #' @importFrom stats qexp
+#' @importFrom stats qweibull
 cacheable_cdfs <- list(
   pnorm = qnorm,
   plnorm = qlnorm,
   punif = qunif,
   plunif = function(p) qlunif(p, min = 1, max = exp(1)),
-  pexp = qexp
+  pexp = qexp,
+  pweibull = function(p) qweibull(p, shape = 1)
 )
 
 # Simulated null distribution of D for samples of size 'n', computed by LcKS()

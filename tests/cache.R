@@ -4,6 +4,8 @@ library(KScorrect)
 null_cache <- KScorrect:::null_cache
 clear <- function() rm(list = ls(null_cache), envir = null_cache)
 warns <- function(expr) tryCatch({ expr; FALSE }, warning = function(w) TRUE)
+# Without the cache, LcKS() recommends running Weibull tests in parallel
+quiet_LcKS <- function(...) suppressWarnings(LcKS(...))
 fails <- function(expr) inherits(try(expr, silent = TRUE), "try-error")
 
 # Pairs of samples with very different parameters
@@ -13,7 +15,8 @@ samples <- list(pnorm = list(rnorm(n), rnorm(n, 50, 9)),
                 plnorm = list(rlnorm(n), rlnorm(n, 3, 2)),
                 punif = list(runif(n), runif(n, -40, 90)),
                 plunif = list(rlunif(n, 1, 2), rlunif(n, 0.01, 900)),
-                pexp = list(rexp(n), rexp(n, 0.01)))
+                pexp = list(rexp(n), rexp(n, 0.01)),
+                pweibull = list(rweibull(n, 1), rweibull(n, 5, 100)))
 stopifnot(setequal(names(samples), names(KScorrect:::cacheable_cdfs)))
 
 for (cdf in names(samples)) {
@@ -22,10 +25,12 @@ for (cdf in names(samples)) {
 
   # The null distribution does not depend on the estimated parameters
   set.seed(2)
-  a <- LcKS(x, cdf, nreps = 199)
+  a <- quiet_LcKS(x, cdf, nreps = 199)
   set.seed(2)
-  b <- LcKS(y, cdf, nreps = 199)
-  stopifnot(all.equal(a$D.sim, b$D.sim))
+  b <- quiet_LcKS(y, cdf, nreps = 199)
+  # The precision of the Weibull estimates is limited by MASS::fitdistr()
+  tolerance <- if (cdf == "pweibull") 0.01 else 1e-8
+  stopifnot(max(abs(a$D.sim - b$D.sim)) < tolerance)
 
   # The result depends neither on the state of the cache nor on the seed
   clear()
@@ -44,7 +49,7 @@ for (cdf in names(samples)) {
             cold$p.value == (sum(cold$D.sim > cold$D.obs) + 1) / 200)
 
   # Same null distribution as without the cache
-  a <- LcKS(x, cdf, nreps = 4999)
+  a <- quiet_LcKS(x, cdf, nreps = 4999)
   b <- LcKS(x, cdf, nreps = 4999, cache = TRUE)
   stopifnot(abs(quantile(a$D.sim, 0.95) - quantile(b$D.sim, 0.95)) < 0.01)
 }
@@ -86,6 +91,8 @@ invisible(LcKS(x, "pexp", nreps = 99))
 stopifnot(warns(LcKS(x, "pgamma", nreps = 1, cache = TRUE)))
 g <- suppressWarnings(LcKS(x, "pgamma", nreps = 9, cache = TRUE))
 stopifnot(length(g$D.sim) == 9, length(ls(null_cache)) == 0)
+
+stopifnot(!warns(LcKS(x, "pweibull", nreps = 9, cache = TRUE)))
 
 # Incompatible or invalid arguments
 stopifnot(warns(LcKS(x, "pexp", nreps = 99, cache = TRUE, parallel = TRUE)),
